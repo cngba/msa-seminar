@@ -1,0 +1,12 @@
+Chuẩn bị một ứng dụng cho mỗi đề tài
+- Tên ứng dụng: VD: Dự đoán giá nhà dựa vào mô hình hồi quy tuyến tính
+- Bối cảnh/Ý nghĩa: VD
+- Bài toán: Nêu rõ input, output
+- Chọn mô hình: Giải thích mô hình được chọn phù hợp
+- Giải: Cực tiểu hoá mục tiêu? 
+- Kiểm định 
+- Giải thuật
+- Đánh giá kết quả làm được
+
+Phái có bài toán, có biến, có giải thuật
+:w
