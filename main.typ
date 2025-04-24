@@ -196,8 +196,9 @@ N mẫu + p biến --> ma trận có k vector đặc trưng, có giảm số bi�
 Incremental PCA
 
 ==> Cần giải thích ra thành phẩm cụ thể của từng công trình, không hiểu rõ phương pháp và sự liên quan của nó với PCA gốc
-
-= Phân lớp
+/*
+= Phân lớp (1)
+Đây là đồ án của nhóm Pass.
 
 Gắn nhãn cho 
 
@@ -225,6 +226,8 @@ Ví dụ cũng chưa cụ thể.
 
 Phân lớp, trong bài toán thực tế vì có liên quan đến tiên đoán (prediction).
 Ví dụ: Ảnh u xương --> u đại bào, u tiểu bào, lành tính hay ác tính $->$ dẫn đến bài toán phân lớp
+
+
 
 
 == Công trình nghiên cứu liên quan
@@ -272,148 +275,455 @@ $(m_1 - m_2)^2  = w^T (mu_1 - mu_2) (mu_1 - mu_2)^T w$
 *Notes:*
 - PCA, CCA, LDA, đều quy vào vector riêng - giá trị riêng
 - Nhân tử Larange
+*/
 
-= CLUSTERING - 
+= Phân lớp (2)
+Đây là đồ án của nhóm Vstatic.
 
-- +Vector đặc trưng của mẫu phải có tính khả tắc
+== Ý nghĩa ứng dụng
+- Phân loại đối tượng
+- Phân loại hình ảnh
+- Phân loại khách hàng
+- Nhận diện cảm xúc
 
-- K-Means, Hierarchical Clustering (gom nhóm phân cấp)
-Cần chọn ra cụm dữ liệu tối ưu
-== ý nghĩa ứng dụng
-Marketing, tâm lý học, khảo cổ, y học, xã hội học, ngôn ngữ, sinh học
+== Mục tiêu
+Xây dựng một hàm phân biệt để gán một quan sát $x$ có $d$ đặc trưng, vào 1 trong $k$ lớp, sao cho tối ưu được độ phân biệt giữa các lớp.
 
-== ý nghĩa khoa học
-hiểu ban3n chất, đánh giá tính đa chiều, tìm outliers
+Xét trường hợp 2 lớp và đa lớp
+
+== Công trình liên quan
+=== Phân biệt Triển vọng cực đại - Maximum Likelihood Discriminant:
+Gán x vào hàm có mật độ xác suất lớn nhất, tức là lớp  có khả năng sinh ra x cao nhất theo mô hình giả định: 
+
+$
+C* = arg max (C_k in C)  p(x | C_k)
+$
+
+=== Phân loại bằng định lý Bayes
+Áp dụng định lý Bayes để tính xác suất hậu nghiệm, và chọn xác suất hậu nghiệm lớn nhất.
+Xác suất tiên nghiệm là xác suất ta có được trước khi thực hiện quan sát x và thực hiện phân lớp x vào tập cụ thể w. (công thức xác suất hậu nghiệm)
+
+=== Phân biệt tuyến tính LDA
+Phân tích Thành phần Chính (Principal Component Analysis - PCA), vốn chỉ
+tập trung vào việc giữ lại phương sai tổng thể của dữ liệu mà không xét đến
+thông tin về nhãn lớp.
+Tuy nhiên, việc giữa lại thông tin nhiều nhất không đồng nghĩa với việc giúp
+phân loại tốt nhất.
+Để giải quyết bài toán này, LDA giúp tăng cường khả năng phân biệt giữa các
+nhóm dữ liệu, từ đó cải thiện hiệu suất của các thuật toán phân loại.
+
+== Thực nghiệm
+=== Bài toán 2 lớp
+Xác định xem một tờ tiền là giả hay thật.
+Đầu vào: hình ảnh từ máy quét tiền 
+Đầu ra: Giá trị boolean: Đây là tiền thật hay tiền giả?
+
+Linear Discriminant Analysis
+Phương pháp:
+1. Tính toán trung tâm lớp
+2. Tính ma trận hiệp phương sai trong lớp (within-class covariance)
+3. Tính ma trận hiệp phương sai giữa các lớp (between-class covariance)
+4. Tính vector chiếu tối ưu (tìm vector riêng tương ứng với trị riêng lớn nhất)
+5. Chiếu dữ liệu sang không gian mới (bằng vector w)
+6. Phân loại bằng Nearest Centroid Classifier: Tức là gán nhãn 
+
+$arrow.r.double$ Đạt được độ chính xác $96.73%$ trên tập dữ liệu kiểm tra
+
+=== Bài toán đa lớp
+Tên bài toán: Khảo sát dữ liệu cho NASA
+
+*Thách thức:*
+
+- Chiều dữ liệu rất cao: rất nhiều đặc trưng gắn với mỗi ngôi sao
+- Chồng chéo giữa các lớp
+- Khối lượng dữ liệu khổng lồ, không thể phân loại bằng tay
+
+*Bài toán phân lớp ngôi sao:*
+- Dựa vào đặc trưng vật lý: nhiệt độ, độ sáng, bán kính, độ lớn tuyệt đối, màu sắc, phân loại quang phổ
+- Mục tiêu phân loại: Giá trị phân loại ứng với các loại ngôi sao: Red Dwarf, Brown Dwarf, White, Main Sequence, Super Giants, Hyper Giants
+- Đầu vào: Các tham số về ngôi sao
+- Đầu ra: Giá trị phân loại ngôi sao
+
+*Giải bài toán:*
+- Within-class Variance: thể hiện độ phân tán của các điểm dữ liệu trong 1 class. Kết quả là các vector riêng cùng phương trình giá trị riêng.
+- Lựa chọn và sắp xếp các vector riêng: Nhằm giữ lại nhiều thông tin phân biệt nhất giữa các lớp
+- Chiếu dữ liệu vào không gian mới.
+- Phân loại bằng Nearest Centroid Classifier
+
+
+Nhận xét dữ liệu trước khi thực hiện bài toán:
+- Có sự chồng chéo đáng kể
+- Đặc trưng 0 không phải là một đặc trưng tốt để phân biệt rõ ràng tất cả các lớp
+
+Sau khi thực hiện:
+- Phân tách đáng kể
+- Vẫn còn tồn tại sự chồng chéo
+
+== Nhận xét
+
+= CLUSTERING
+
+== Giới thiệu
+Clustering là kỹ thuật quan trọng trong Phân tích thống kê đa biến, giúp nhóm các quan sát dựa trên sự tương đồng mà không cần gán nhãn trước.
+
+Mục tiêu:
+- Tìm cấu trúc ẩn trong dữ liệu đa biến
+- Hỗ trợ khám phá mô hình
+- Phân tích dữ liệu thăm dò
+- Giảm chiều dữ liệu
+
+Thách thức:
+- Xác định số cụm tối ưu
+- Xử lý dữ liệu nhiều chiều
+
+== Ý nghĩa khoa học
+- Hiểu bản chất phức tạp của các mối quan hệ đa biến
+- Đánh giá mức độ đa chiều của dữ liệu
+- Xác định ngoại lai
+- Đề xuất các giả thuyết thú vị về mối quan hệ giữa các đối tượng
+
+== Ý nghĩa ứng dụng
+- Marketing: Chọn các thị trường thử nghiệm; Phân loại và cơ cấu công ty theo tổ chức
+- Tâm lý học: Tìm ra các loại tính cách trên cơ sở các bảng câu hỏi
+- Khảo cổ học: Phân loại các đồ vật nghệ thuật trong các thời kỳ khác nhau
+Các ngành khoa học khác: y học, sinh học, xã hội học, ngôn ngữ học. 
+
+Trong mỗi trường hợp, một mẫu các đối tượng không đồng nhất được phân tích với mục đích xác định các nhóm con đồng nhất
 
 == Phát biểu bài toán
-Độ tương đồng
-Có thể dùng độ đo tương đồng hoặc độ đo dị biệt
+Đầu vào:
+- Một tập hợp gồm $N$ điểm dữ liệu không gán nhãn
+$
+  X = {x_i | x_i in RR^p, 0 lt.eq i lt.eq N}
+$
+- Hàm đo độ tương đồng giữa 2 điểm dữ liệu
+$
+  s(x_i, x_j)
+$
+- Hàm đo khoảng cách giữa 2 điểm dữ liệu
+$
+  d(x_i, x_j)
+$
 
-Đầu ra là tập y đại diện cho mỗi cluster
+Đầu ra: Một tập hợp gồm $M$ nhãn tương ứng với $N$ điểm dữ liệu
+$
+  Y = {y_i | y_i in {0,1,...,M-1}, 0 lt.eq i lt.eq N}
+$
 
-== Framework
-Đầu vào là dataset có $n$ mẫu
-Optional: k = số lượng cluster
-
-Preprocessing: 
-- Normalization
-- Đơn giản hoá bằng cách giảm chiều: PCA
-
-Similarity Measure:
-
-
-- Partitioning: không phân cấp
-
-Visualization:
-- Dendrogram
-- Chernoff
-- Star
-
-Output
-
-== similar
-
-Công thức tính Coefficient
-
-Phân cụm dữ liệu nhị phân
-nếu có nhiều item hơn thì sẽ so sánh được khoảng cách của chúng.
-Nhược điểm là 
-*tương đồng giữa 2 biến, không phải 2 mẫu*
+== Phương pháp
+Framework:
++ Nhập dữ liệu đầu vào (Input)
++ Tiền xử lý dữ liệu: Normalization, Standardization, Đơn giản hoá dữ liệu
++ Tính toán độ tương đồng (Similarity Measure): l1-norm (Manhattan), l2-norm (Euclidean), Jaccard, $X^2$ matrice
++ Gom nhóm (Clustering)
++ Trực quan hoá dữ liệu: Dendrogram, Chernoff, Star
++ Trả kết quả: `.csv` file cùng đồ thị biểu diễn
 
 
-*từ tiêu chí, đến quy luật*
-= Thuật toán
-- Agglomerative
+=== Similarity Measure
 
+Đo độ tương đồng dựa vào khoảng cách (distance) hoặc mức độ tương quan Coefficient giữa các item/variable.
 
-Có thể thay bằng correlation matrix
+Một số yếu tố cần xem xét khi lựa chọn một loại thang đo độ tương đồng:
+- Biến rời rạc, liên tục, hay nhị phân?
+- Thang đo của feature
+- Kiến thức chuyên môn của lĩnh vực đang thực hiện
 
-- minh hoạ bằng dendrogram
+- Có nhiều cách để đo lường sự tương đồng giữa các cặp đối tượng. Hầu hết các nhà nghiên cứu sử dụng tiêu chí khoảng cách (distance measures) hoặc hệ số tương đồng (correlation coefficient)
+- Đối với kiểu biến nhị phân, có thể tính distance measure theo l1-norm, l2-norm. Tính hệ số tương quan coefficient theo Simple Matching, Jaccard, Russell & Rao, Dice,...
+- Đối với biến liên tục: Tính khoảng cách bằng lr-norm (Minkowski distance), Mahalanobis distance, Cosine distance. Tính hệ số tương quan theo Pearson.
 
-single linkage là để tính ma trận khoảng cách, lấy 2 điểm dữ liệu gần nhau nhất
-complete là xa nhất
-... là trung bình
+=== Thuật toán Gom nhóm
 
-chọn ngưỡng theo từng bài toán? nhưng sẽ không biết giá trị cần chạy trên dendrogram
+1. *Hierarchical*
 
-độ dị biệt giữa 1
+1.1. Agglomerative - Gom cụm: Bắt đầu ở phân vùng nhỏ nhất, mỗi mẫu là 1 cụm, sau đó đi gom dần dữ liệu lại thành cụm.
+- Single Linkage Distance: Khoảng cách giữa hai cụm được tính là khoảng cách ngắn nhất giữa hai điểm ở hai cụm.
+- Complete Linkage Distance: Khoảng cách giữa hai cụm được tính là khoảng cách xa nhất giữa hai điểm ở hai cụm.
+- Average Linkage Distance: Khoảng cách giữa hai cụm được tính là trung bình các khoảng cách giữa tất cả các điểm ở hai cụm.
+- Ward method: Tìm cách giảm thiểu tổng bình phương sai số (Total Within-Cluster Variance) khi gom cụm.
 
-(?) khi nào kết thúc gom cụm?
+_Thuật toán Gom cụm phân cấp_:
++ Xây dựng phân cụm nhỏ nhất, mỗi đối tượng là một cụm riêng lẻ
++ Tính toán ma trận khoảng cách $D$
++ Tìm 2 cụm có khoảng cách nhỏ nhất
++ Gom 2 cụm đó thành 1 cụm mới
++ Cập nhật lại ma trận khoảng cách $D$ sau khi hợp nhất cụm
 
-- khoảng cách giữa điểm-điểm, điểm-tập hợp đều có chung công thức
+Lặp lại các bước 3 - 5 cho đến khi tất cả các cụm được hợp nhất thành 1 cụm X duy nhất.
 
-- Sau khi gán nhãn, không thể thay đổi
+_Kết luận_:
+- Không xem xét về sai số và hàm lỗi nên phương pháp này nhạy cảm với các giá trị ngoại lai và nhiễu
+- Khi đối tượng đã được phân cụm thì không thể sửa lại, vì vậy cần cẩn trọng sai sót từ giai đoạn đầu.
+- Những giá trị bằng nhau trong ma trận khoảng cách hoặc độ tương đồng có thể tạo ra nhiều lời giải khác nhau cho bài toán gom cụm phân cấp.
 
-- +dàn bài không rõ: có phải là đang đưa các mẫu về cùng một nhóm? khi đã thành nhóm, distance thường phải bé nhất có thể
-để làm được vậy, ta cần hiểu vì sao cây cần phải xoay như vậy?-- nói chưa rõ mục đích, gom như vậy thì đầu ra sẽ đạt được gì
+1.2. Splitting - Phân cụm: Cho tất cả mẫu thành 1 nhóm, sau đó tách ra dần dần thành các cụm nhỏ hơn.
+
+2. *Partitioning* (Non-hierarchical): Khởi đầu với $k$ cụm bằng cách gom ngẫu nhiên dữ liệu ở gần tâm cụm lại, chấp nhận rủi ro gán nhầm; sau đó hoán đổi các phần tử giữa các cụm theo 1 tiêu chí nhất định (ví dụ: Khoảng cách so với tâm cụm mới).
+
+Kỹ thuật này được thiết kế để nhóm các đối tượng thay vì biến số vào 1 tập hợp gồm K cụm. Số cụm K có thể được xác định trước hoặc được xác định trong quá trình phân cụm.
+
+Do không cần xây dựng ma trận khoảng cách (độ tương đồng), và dữ liệu cơ bản không cần phải lưu trữ trong quá trình thực thi, các phương pháp phân cụm phi phân cấp có thể áp dụng trên các tập dữ liệu lớn hơn nhiều so với các phương pháp phân cụm phân cấp.
+
+Các phương pháp phân cụm phi phân cấp thường bắt đầu bằng:
+- Phân nhóm ban đầu các đối tượng vào các cụm
+- Chọn một tập hợp các điểm trung tâm ban đầu, chúng sẽ hình thành hạt nhân của các cụm.
+
+_Thuật toán K-Means Clustering_:
+1. Phân chia dữ liệu thành K cụm ban đầu
+2. Duyệt qua danh sách các đối tượng, gán mỗi đối tượng vào cụm có trung tâm gần nhất. 
+- Sử dụng khoảng cách Euclidean, với dữ liệu chuẩn hoá hoặc không chuẩn hoá.
+- Cập nhật lại trung tâm cụm khi 1 điểm dữ liệu mới được thêm vào và khi 1 điểm rời khỏi cụm trước đó.
+3. Lặp lại bước 2 cho đến khi không còn sự thay đổi nào trong việc gán cụm.
+
+Sự khác biệt giữa Hierarchical và Partitioning:
+- Hierarchical: Nếu dữ liệu đã gán cụm rồi thì không thể thay đổi được nữa.
+- Partitioning: Có thể thay đổi nhãn của cụm dữ liệu, tuỳ vào quá trình chạy
+
+== Nhận xét
 - Chọn chiến lược linkage, cần thêm hình ảnh minh hoạ, cái nào mạnh, cái nào yếu
+- Trình bày chưa rõ ràng về mục đích thực hiện phân cụm
+- Chưa biết được khi nào kết thúc gom cụm
 
-- k-means dựa trên tập mẫu và chia thành k cụm
-
-
-= PHÂN LỚP
-
-ý nghĩa ứng dụng
-- phân loại đối tượng
-- nhận diện cảm xúc
-
-không thể phân lớp bằng mắt. 2 mẫu có thể rất giống nhau.
-ví dụ trong y khoa, u xương ở trẻ em, tiến triển rất nhanh
-
-nhận diện != nhận dạng: class ID?
-
-== phát biểu bài toán
-n điểm dữ liệu, d đặc trưng
-
-số phần tử trong lớp thứ i là n
-có k lớp khác nhau
-
-1 quan sát có d đặc trưng
-
-- INPUT LÀ MỘT 
-ẩn số là đi tìm tiêu chí phân lớp, có thể gọi là hàm phân biệt
-
-có 2 công đoạn: discriminant và classification
-
-tìm lớp có giá trị phân biệt lớn nhất
-
-- chưa có thông tin về rút trích đặc trưng
-
-== phương pháp liên quan
-- maximum likelihood discriminant
-
-== LDA
+// = PHÂN LỚP
 
 
-- không có khái niệm phương sai giữa các lớp
+// không thể phân lớp bằng mắt. 2 mẫu có thể rất giống nhau.
+// ví dụ trong y khoa, u xương ở trẻ em, tiến triển rất nhanh
 
-- nhiều chi tiết toán không rõ?
+// nhận diện != nhận dạng: class ID?
+
+// == phát biểu bài toán
+// n điểm dữ liệu, d đặc trưng
+
+// số phần tử trong lớp thứ i là n
+// có k lớp khác nhau
+
+// 1 quan sát có d đặc trưng
+
+// - INPUT LÀ MỘT 
+// ẩn số là đi tìm tiêu chí phân lớp, có thể gọi là hàm phân biệt
+
+// có 2 công đoạn: discriminant và classification
+
+// tìm lớp có giá trị phân biệt lớn nhất
+
+// - chưa có thông tin về rút trích đặc trưng
+
+// == phương pháp liên quan
+// - maximum likelihood discriminant
+
+= PHÂN TÍCH PHÂN BIỆT (Linear Discriminant Analysis)
+
+== Giới thiệu
+LDA được giới thiệu lần đầu bởi R.A.Fisher vào năm 1936 và được mở rộng bởi C.R.Rao cho bài toán phân lớp đa nhóm vào những năm 1940. 
+LDA được ứng dụng rộng rãi trong các bài toán phân loại dữ liệu đa biến với giả định toán học thuần tuý.
+
+_Ý nghĩa khoa học:_
+
+_Ý nghĩa ứng dụng:_
+- Y tế và chăm sóc sức khoẻ: Chẩn đoán bệnh, phân tích hình ảnh y tế
+- Tài chính - Ngân hàng: Đánh giá rủi ro, phát hiện gian lận
+- Marketing và bán hàng: Phân khúc khách hàng, dự đoán xu hướng
+- An ninh mạng: Phát hiện xâm nhập
+- Xử lý ngôn ngữ: Phân loại văn bản
+- Khoa học xã hội và Nghiên cứu thị trường: Phân tích khảo sát, dự đoán hành vi
+== Phát biểu bài toán
+_Đầu vào:_
+- Tập dữ liệu đã tiền xử lý
+- Nhãn lớp (Labels)
+
+_Đầu ra:_
+- Các quy tắc hoặc hàm phân biệt cho 
+
+== Phương pháp
+Mục tiêu của LDA là tìm ra một tổ hợp tuyến tính của các biến ban đầu sao cho khi chiếu dữ liệu sang 1 không gian có chiều thấp hơn, các lớp được tách biệt rõ ràng hơn. Điều này được thể hiện thông qua việc tối đa hoá tỷ số giữa độ phân tán giữa các lớp và độ phân tán trong lớp.
+
+Hàm mục tiêu được diễn đạt như sau:
+
+_Giả định 1:_
+Giả sử tồn tại K lớp, và dữ liệu của mỗi lớp $C_j$ được mô hình hoá bởi phân phối chuẩn đa biến, nghĩa là:
+$
+  x | C_j tilde.op N(mu_j, Sigma_j), j = 1, ..., K
+$
+hay hàm mật độ của lớp $C_j$ được cho bởi:
+$
+  f_j(X) = 1 / ( (2 pi)^(P/2) |Sigma_j|^(1/2) ) exp {-1/2 (x - mu_j)^T Sigma_j^(-1) (x - mu_j)}
+$
+trong đó:
+- $x$ là vector quan sát có $p$ thành phần
+- $mu_j$ là vector trung bình của lớp $C_j$
+- $Sigma_j$ là ma trận hiệp phương sai của lớp $C_j$.
+
+
+_Các đại lượng đo độ phân tán:_
+Giả sử dữ liệu được chia thành 2 lớp $C_1$ và $C_2$ với số mẫu $N_1$, $N_2$ tương ứng, mỗi quan sát $x in RR^p$. Khi chiếu dữ liệu lên một hướng $w$, trung bình sau chiếu của mỗi lớp được tính như sau:
+$
+  m_1 = 1/N_1 sum_(x in C_1) w^T x \
+  m_2 = 1/N_2 sum_(x in C_2) w^T x
+$
+
+Tương tự, độ phân tán (sai số) của mỗi lớp sau chiếu được định nghĩa là:
+$
+  s_1^2 = sum_(x in C_1)(w^T x - m_1)^2 \
+  s_2^2 = sum_(x in C_2)(w^T x - m_2)^2
+$
+
+_Between-class covariance matrix:_
+Khoảng cách giữa 2 điểm sau chiếu được đo bằng hiệu của trung bình các điểm sau chiếu, cụ thể:
+$
+  (m_1 - m_2)^2 = w^T (mu_1 - mu_2) (mu_1 - mu_2)^T w
+$
+Ta định nghĩa between-class covariance matrix:
+$
+  S_B = (mu_1 - mu_2)(mu_1 - mu_2)^T
+$
+Như vậy ta có:
+$
+  (m_1 - m_2)^2 = w^T S_B w
+$
+
+
+*Hàm mục tiêu của LDA*:
+_Mục tiêu:_
+Mục tiêu của LDA là tìm một hướng $w$ sao cho tỷ số giữa độ phân tán giữa lớp và độ phân tán trong lớp được tối đa hoá.
+Ban đầu, ta xây dựng hàm mục tiêu dựa trên đại lượng đo sự phân tán:
+$
+  J(w) = frac((m_1 - m_2)^2,s_1^2 + s_2^2)
+$
+trong đó:
+- $m_1$, $m_2$ là trung bình các điểm sau chiếu của từng lớp
+- $s_1^2$, $s_2^2$ là tổng bình phương sai lệch của các điểm so với trung bình trong từng lớp
+
+_Hàm mục tiêu biểu diễn qua_ $S_B$ _và_ $S_W$:
+$
+  J(w) = frac(w^T S_B w, w^T S_W w) 
+$
+
+*Các bước thực hiện LDA cho 2 lớp*:
+- Giải bài toán eigenvalue: 
+$
+  S_W^-1 S_B w = lambda w
+$
+- Chọn nghiệm tối ưu: Sắp xếp các trị riêng (eigenvalue) theo thứ tự giảm dần rồi chọn vector riêng (eigenvector) ứng với trị riêng lớn nhất làm nghiệm tối ưu $w ast.basic$
+- Chiếu dữ liệu: Với mỗi $x$, tính giá trị chiếu:
+$
+  y = (w ast.basic)^T x
+$
+- Phân lớp: Xác định ngưỡng (thường là trung điểm của $(w ast.basic)^T mu_1 $ và $(w ast.basic)^T mu_2 $) để gán nhãn cho các điểm dữ liệu
+== Nhận xét
+- Không có khái niệm phương sai giữa các lớp
+- Nhiều chi tiết toán không rõ?
 
 
 = SUY DẪN KẾT QUẢ LIÊN QUAN ĐẾN QUẦN THỂ DỰA TRÊN THÔNG TIN MẪU
 
+== Giới thiệu
+*Thống kê suy luận* là một phương pháp thống kê được sử dụng để đưa ra dự đoán hoặc suy luận về một quần thể dựa trên mẫu dữ liệu. 
 
-- ví dụ xác thực, code chu
-- thiếu CDF
+_Vai trò:_
+Diễn giải dữ liệu, tiến đến đưa ra kết luận thực tiễn, hữu ích, tiếp tục tiến đến sử dụng cho các quyết định trong tương lai.
 
-phương sai population
+_Ý nghĩa khoa học_:
+- Khả năng tổng quát hoá (generalization) và dự đoán (prediction)
+- Tăng hiệu quả và tính khả thi trong việc thu thập dữ liệu trong nghiên cứu
 
-- giải thích phân phối student
-Đặc điểm chính của phân phối Student:
-- đối xứng quanh 0
-- có hình chuông
-- Phụ thuộc vào bậc tự do $n - 1$ 
+_Ý nghĩa ứng dụng_:
+- Kiểm soát chất lượng và quản lý rủi ro: Kiểm tra một nhóm mẫu từ mỗi lô sản xuất, nhằm giám sát chất lượng sản phẩm
+- Phục vụ y khoa và dịch vụ y tế công cộng: Thu thập dữ liệu mẫu để theo dõi mức độ lây lan của bệnh trong một vùng, giúp lên kế hoạch cho các biện pháp can thiệp và phân bố nguồn lực hợp lý.
+- Nghiên cứu về môi trường và xã hội: Thu thập dữ liệu về chất lượng không khí từ một vài trạm giám sát để đánh giá mức độ ô nhiễm trong 1 thành phố, qua đó đề xuất các chính sách cải thiện chất lượng không khí.
 
-Sau khi có được bậc tự do $n - 1$ và mức ý nghĩa $alpha$ thì ta có thể kiểm định giả thuyết.
+== Phát biểu bài toán
+_Đầu vào:_
+- Một tập mẫu ngẫu nhiên $(X_1, X_2, X_3, ..., X_n)$ được lấy từ một quần thể.
+- Giả thuyết không ($H_0$): Vector trung bình thực sử của quần thể ($mu$) bằng với vector trung bình kiểm định của quần thể ($mu_0$). 
+$
+  H_0: mu eq mu_0
+$ 
+- Giả thuyết thay thế ($H_1$): Vector trung bình thực sự của quần thể ($mu$) khác với vector trung bình của quần thể mà ta kiểm định ($mu_0$)
+$
+  H_1: mu eq.not mu_0
+$
+- Mức ý nghĩa $alpha$: Xác suất cho phép mắc lỗi loại I (tức lỗi bác bỏ $H_0$ mặc dù $H_0$ đúng).
 
-Phân phối Fisher
-sử dụng khi kiểm định giả thuyết và so sánh phương sai
-cần bậc tự do của tử số và bậc tự do của mẫu số
+_Đầu ra:_ Bác bỏ hoặc không bác bỏ giả thuyết $H_0$, dựa vào kiểm định thống kê.
 
-=== Phương pháp
-Đối với mẫu một biến
+== Phương pháp
+=== Một số phân phối cần thiết
 
-cái đã biết là là $mu_0$.
+*Phân phối t* (hay còn gọi là phân phối Student's t) là một loại phân phối xác suất được sử dụng khi:
+- Kích thước mẫu ($n$) nhỏ.
+- Phương sai tổng thể ($sigma^2$ ) chưa biết.
+Nó thường được dùng để kiểm định giả thuyết hoặc xây dựng khoảng tin cậy cho giá trị trung bình của một quần thể.
+
+_Đặc điểm chính:_
+- Đối xứng quanh 0.
+- Có hình chuông.
+- Phụ thuộc vào bậc tự do $n - 1$ (degrees of freedom - df), với $n$ là kích thước mẫu.
+- Khi bậc tự do tăng lên (kích thước mẫu lớn), phân phối t tiến gần đến phân phối chuẩn.
+- Mức ý nghĩa $alpha$ là một ngưỡng mà ta đặt ra để quyết định xem có bác bỏ giả thuyết ban đầu $H_0$ hay không. 
+- Sau khi xác định bậc tự do và mức ý nghĩa, ta có thể sử dụng bảng phân phối T để tra giá trị tương ứng.
+
+*Phân phối Fisher* là một loại phân phối xác suất được đặt tên theo nhà thống kê Ronald Fisher.
+Sử dụng phân phối F khi:
+- So sánh hai phương sai.
+- Kiểm định giả thuyết liên quan đến nhiều biến.
+
+Để tra bảng phân phối Fisher, chúng ta cần biết hai giá trị: 
+- Bậc tự do của tử số (numerator degrees of freedom) được tính bằng công thức: $p - 1$, với $p$ là số nhóm dữ liệu mà chúng ta đang so sánh.
+- Bậc tự do của mẫu số (denominator degrees of freedom) được tính bằng công thức: $n - p$, với n là tổng số quan sát và $p$ là số nhóm dữ liệu.
+
+=== Mẫu một biến
+Ta có các mẫu ngẫu nhiên từ một quần thể chuẩn. Để kiểm chứng xem giả thuyết có hợp lý hay không, ta sử dụng thống kê kiểm định t.
+$
+  t = frac(macron(X) - mu_0, s / sqrt(n))
+$
+
+Trong đó:
+- $mu_0$ là trung bình của quần thể theo giả thuyết.
+- $macron(X) = 1/N sum^n_(j=1) X_j$ là trung bình mẫu.
+- $s^2 = 1/(n-1) sum^n_(j=1) (X_j - macron(X))^2 $ là phương sai của mẫu.
+- $n$ là số phần tử có trong mẫu.
+
+Kết quả này tuân theo phân phối t với $n - 1$ bậc tự do.
+
+Ta bác bỏ $H_0$ khi $|t|$ lớn hay bình phương của nó lớn, tức là bác bỏ $H_0$ để chấp nhận $H_1$ ở mức ý nghĩa $alpha$ nếu:
+$
+  n(macron(x) - mu_0)(s^2)^(-1)(macron(x) - mu_0) > t^2_(n-1) (alpha / 2)
+$
+
+Ta không bác bỏ $H_0$ khi:
+$
+  |frac(macron(x) - mu_0, s / sqrt(n))| < t_(n-1) (alpha / 2)
+$
+
+Tổng kết: Với giá trị kiểm định thống kê t có phân phối t với $n-1$ bậc tự do:
+- Tính $t_(n-1) (alpha / 2)$ bằng cách tra bảng phân phối t với $n-1$ bậc tự do.
+- Nếu $|t| gt t_(n-1) (alpha / 2)$ thì ta bác bỏ $H_0$.
+- Nếu $|t| lt.eq t_(n-1) (alpha / 2)$ thì ta không bác bỏ $H_0$.
+
+=== Mẫu nhiều biến
+Với trường hợp mẫu có nhiều biến, giả sử số biến là $p$.
+
+$
+  T^2 = n (macron(X) - mu_0)' S^(-1) (macron(X) - mu_0)
+$
+_Dấu chấm phẩy là thay cho chữ T, tức chuyển vị ma trận._
+
+Trong đó:
+- $mu_0$ là trung bình của quần thể theo giả thuyết. ($p times 1$)
+- $macron(X) = 1/N sum^n_(j=1) X_j$ là trung bình nhóm mẫu được chọn. ($p times 1$)
+- $s^2 = 1/(n-1) sum^n_(j=1) (X_j - macron(X)) (X_j - macron(X))' $ là ước lượng hiệp phương sai của tập mẫu được chọn ($p times p$). $(X_j - macron(X))$ có $p times 1$ chiều.
+- $n$ là số phần tử có trong mẫu.
+
+=== Các bước giải bài toán kiểm định
+
+
+== Nhận xét
+- Ví dụ xác thực, code đạt chuẩn 
+- Thiếu CDF
+- Cần giải thích phân phối student
+
 
 = TÁI LẤY MẪU (RESAMPLING)
 Suy luận thống kê
@@ -425,15 +735,107 @@ Suy luận thống kê
 
 trung bình của nhóm có dùng thuốc mới và nhóm không dùng thuốc mới
 
-= CÁC KHÁI NIỆM CƠ BẢN VỀ PTTKDLNB
+= CÁC KHÁI NIỆM CƠ BẢN VỀ PHÂN TÍCH THỐNG KÊ DỮ LIỆU NHIỀU BIẾN
 
-- Variance được minh hoạ bằng độ dài của vector độ lệch
+== Phát biểu bài toán
+Tên bài toán: Ứng dụng kiểm định vào View Synthesis
 
+Đầu vào: Tập dữ liệu ảnh chụp từ nhiều vị trí / góc nhìn
+
+Đầu ra: Khẳng định tập dữ liệu ảnh có đủ "dày" không
+
+== Phương pháp 1: Hình học mẫu
+Cách biểu diễn hình học của dữ liệu nhiều biến trong không gian Euclid, giúp trực quan hóa mối quan hệ giữa các biến và các quan sát.
+
+*Vai trò:*
+- Trực quan hóa dữ liệu phức tạp
+- Đo lường mối quan hệ giữa các biến và quan sát 
+- Hỗ trợ phương pháp phân tích đa biến .
+
+== Phương pháp 2: Phân phối chuẩn đa biến
+Phân phối chuẩn đa biến với trung bình $mu$ và ma trận hiệp phương sai có hàm mật độ xác suất là:
+$
+  f(x) = 1 / sqrt(|2 pi |Sigma||)exp(-1/2 (x - mu)^T Sigma^(-1) (x - mu))
+$
+Trong đó:
+- $x$ là vector điểm dữ liệu cần tính mật độ xác suất
+- $mu$ là vector trung bình
+- $Sigma$ là ma trận hiệp phương sai
+- $(x - mu)^T Sigma^(-1) (x - mu)$ là khoảng cách Mahalanobis giữa $x$ và $mu$. 
+
+Công thức này mở rộng hàm mật độ của phân phối chuẩn một chiều sang nhiều chiều, với khoảng cách Mahalanobis thay thế cho khoảng cách Euclid để phản ánh mối quan hệ giữa các biến.
+
+*Phép biến đổi Mahalanobis*: Chuẩn hoá phân phối chuẩn đa biến thành phân phối chuẩn độc lập
+
+*Tính chất*:
+- Bảo toàn phân phối chuẩn dưới phép biến đổi tuyến tính
+- Phân phối chuẩn nhiều chiều có điều kiện
+
+== Phương pháp 3: Hàm hợp lý và Thống kê kiểm định
+=== Hàm hợp lý
+Xét một mẫu độc lập, phân phối giống nhau ${x_i}^n_(i=1)$. Mỗi giá trị $x_i$  được giả định tuân theo một phân phối xác suất với hàm mật độ xác suất (PDF) $f(x;0)$ với $theta$ là tham số chưa biết cần ước lượng.
+
+Hàm hợp lý được định nghĩa là xác suất (hoặc mật độ) của toàn bộ mẫu dữ liệu đã quan sát, được xem như là một hàm của $theta$:
+
+$
+  L(X;theta) = Pi^n_(i=1) f(x_i;theta)
+$
+
+Hàm này phản ánh mức độ "hợp lý" của tham số $theta$ trong việc tạo ra dữ liệu đã quan sát.
+
+Ước lượng hợp lý cực đại: Là tìm giá trị tham số $theta$ thoả mãn $L(X;theta)$ đạt giá trị lớn nhất.
+$
+  hat(theta) = arg max_theta L(X;theta)
+$
+
+Để đơn giản hóa việc tính toán, đặc biệt khi làm việc với tích của nhiều hàm, ta thường sử dụng hàm hợp lý logarit:
+$
+  l(X;theta) = log L(X;theta) = sum^N_(i=1) log f(x_i;theta)
+$
+
+=== Kiểm định giả thuyết
+Trong bài toán kiểm định giả thuyết, ta có:
+- Giả thuyết không ($H_0$) là giả thuyết cần kiểm định. Tập hợp các giá trị thuộc $H_0$ được kí hiệu là $Omega_0$.
+- Giả thuyết đối ($H_1$) là giả thuyết đối lập với giả thuyết không. Tập hợp các giá trị thuộc $H_1$  được kí hiệu là $Omega_1$.
+
+Hai loại sai lầm trong kiểm định giả thuyết:
+- Sai lầm loại I xảy ra khi bác bỏ $H_0$, mặc dù nó đúng.
+- Sai lầm loại II xảy ra khi bác bỏ $H_1$, mặc dù nó sai.
+
+Xác suất xảy ra sai lầm loại I được gọi là mức ý nghĩa, ký hiệu là $alpha$.
+
+Miền bác bỏ: Tập hợp các giá trị của thống kê kiểm định mà khi rơi vào đó, ta bác bỏ giả thuyết không.
+
+*Kiểm định tỷ số hợp lý*:
+Kiểm định một tham số $theta$ trong mô hình phân phối đa biến chuẩn $N_p(theta, I)$:
+- $H_0$: $theta eq theta_0$ (giá trị cụ thể đã biết)
+- $H_1$: $theta eq.not theta_0$
+
+Để đánh giá mức độ phù hợp của $H_0$, ta so sánh giá trị hợp lý cực đại khi $H_0$ đúng và khi $H_1$ đúng. Với mẫu ngẫu nhiên $X$, ta có tỷ số hợp lý:
+
+$
+  lambda(X) = frac(L^star_0, L^star_1)
+$
+
+Trong đó:
+- $L^star_0$ là giá trị cực đại của hàm hợp lý khi ủng hộ $H_0$.
+- $L^star_1$ là giá trị cực đại của hàm hợp lý khi ủng hộ $H_1$.
+
+Kiểm định tỷ số hợp lý với mức ý nghĩa $alpha$ để kiểm định $H_0$ so với $H_1$ có miền bác bỏ $R$:
+$
+  R = {X : lambda(X) < c}
+$
+với $c$ là một ngưỡng xác định, sao cho xác suất bác bỏ $H_0$ không vượt quá mức ý nghĩa.
+
+// - Variance được minh hoạ bằng độ dài của vector độ lệch
+== Nhận xét
 - Nhiều chi tiết chưa rõ ràng
 - Giải thích tại sao là "hàm hợp lý"? Từ "hợp lý" từ đâu ra? Likelihood? Phải dịch là hàm triển vọng. Ước lượng triển vọng cực đại
-Xác suất xuất hiện X1, X2 Xn là bao nhiêu?
-- Tại sao phải ước lượng triển vọng cực đại? ta cần ước lượng xem các ẩn số phải tìm là bao nhiêu để tích đạt cực đại, khi đó xác suất đồng biện n mẫu là lớn nhất có thể.
-- Trong tính toán hàm vật lý, vì hai hàm đồng biến, không thể lấy log vì "để bỏ đi $e$ mũ".
-- Kiểm định giả thuyết:
-- Kiểm định tỷ số hợp lý: $l_0$ ở đâu ra? Trang sau có liên quan gì đến trang trước.
+// Xác suất xuất hiện $X1$$, X2 Xn là bao nhiêu?
+- Tại sao phải ước lượng triển vọng cực đại?
+Giải đáp: Ta cần ước lượng các tham số chưa biết sao cho hàm hợp lý - tức là tích của các hàm mật độ xác suất (hoặc hàm khối xác suất) của $n$ mẫu quan sát - đạt giá trị lớn nhất. Khi đó, mô hình với các tham số này giải thích dữ liệu đã quan sát là hợp lý nhất.
+- Trong tính toán hàm vật lý, vì hai hàm đồng biến, không thể lấy $log$ vì "để bỏ đi $e$ mũ".
+
+Kiểm định giả thuyết:
+- Kiểm định tỷ số hợp lý: $l_0$ ở đâu ra? Trang sau có liên quan gì đến trang trước
 - Kiểm định giả thuyết khi biết ma trận hiệp phương sai: ta cần biết gì? $mu$
