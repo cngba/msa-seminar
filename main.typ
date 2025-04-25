@@ -38,7 +38,7 @@
   authors: authors,
   keywords: (),
   abstract: [
-    None
+    Đây là phần Seminar của Bài tập Lớp - Nhà, môn Phân tích thống kê dữ liệu nhiều biến, thực hiện bởi nhóm Orz. Phần này ghi lại các đồ án của các nhóm khác trong lớp đã thực hiện trong suốt học kỳ.
   ],
   bibliography: bibliography("biblio.bib"),
   appendix: [
