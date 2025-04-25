@@ -65,6 +65,101 @@
 = PHÂN TÍCH TƯƠNG QUAN CHÍNH TẮC
 
 == Khái niệm
+Là một kỹ thuật thống kê đa biến nhằm phân tích tương quan giữa hai tập biến. Các biến trong mỗi tập sẽ không đông thời xuât hiện trong hai tập biến đang xét.
+
+_Mục đích_:
+- Xử lý dữ liệu đa chiều và đa nguồn (Multi-modal Data)
+- Nhu cầu phân tích quan hệ nhân quả tiềm ẩn
+- Ứng dụng trong công nghệ hiện đại
+
+=== Ý nghĩa khoa học
+- Khám phá mối quan hệ đa biến phức tạp
+- Giảm chiều dữ liệu mà vẫn giữ được thông tin quan trọng
+- Cung cấp nền tảng cho nghiên cứu liên ngành
+- Hỗ trợ xây dựng mô hình dự đoán
+
+=== Ý nghĩa ứng dụng
+- Giáo dục, tâm lý học
+- Sinh học, y tế
+- Công nghệ và Trí tuệ nhân tạo
+
+== Các công trình nghiên cứu liên quan
+=== Sparse Canonical Correlation Analysis (SCCA)
+_Định nghĩa_:
+Phương pháp xác định các tổ hợp tuyến tính thưa thớt của hai tập biến có tương quan cao với nhau, phân tích dữ liệu genomic khi có hai tập hợp các phép
+
+_Mục tiêu_:
+- Tối đa hoá tương quan giữa các tổ hợp tuyến tính của 2 tập biến
+- Tạo ra các vector canonical thưa thớt, từ đó thêm các hàm phạt vào bài toán tối ưu hoá
+
+_Điểm mạnh_:
+- Tính thưa thớt
+- Dễ giải thích hơn
+- Tính độc nhất
+- Linh hoạt
+- Ứng dụng trong genomic data
+
+==== Công thức
+maximize $w_1$, $w_2$
+$
+  w_1^T X_1^T X_2 w_2
+$
+subject to
+$
+  ||w_1||^2 lt.eq 1, ||w_2||^2 lt.eq 1, P_1(w_1) lt.eq c_1, P_2(w_2) lt.eq c_2
+$
+trong đó
+- $w_1$, $w_2$ là các vector canonical (trọng số)
+- $X_1$, $X_2$ là 2 tập dữ liệu
+- $P_1$, $P_2$ là các hàm phạt convex, thường được chọn để tạo ra $w_1$ và $w_2$ thưa thớt
+- $c_1$, $c_2$ là các tham số điều chỉnh độ thưa thớt
+
+=== Deep Canonical Correlation Analysis (DCCA) 
+_Định nghĩa_:
+Phương pháp học sâu nhằm tìm các biểu diễn phi tuyến phức tạp của 2 tập dữ liệu, sao cho biểu diễn kết quả có tương quan tuyến tính cao nhất.
+
+_Mục tiêu_: Học các biểu diễn phi tuyến từ hai tập dữ liệu bằng cách sử dụng mạng nơ-ron sâu, sau đó áp dụng CCA trên các biểu diễn đã học để tối ưu hoá tương quan giữa chúng.
+
+_Điểm mạnh_: 
+- Nhờ sử dụng mạng nơ-ron học sâu, DCCA có thể học các biểu diễn phi tuyến phức tạp 
+- Không yêu cầu tích vô hướng, giúp giảm độ phức tạp tính toán
+- Lợi thế của mô hình tham số (parametric model): Biểu diễn của dữ liệu mới có thể được tính toán mà không cần tham chiếu đến tập huấn luyện
+
+_Điểm yếu_:
+- Dù đã bớt được tích vô hướng, mạng nơ-ron sâu lại có độ phức tạp tính toán cao hơn nhiều, đồng thời đòi hỏi nhiều tài nguyên
+- Các biểu diễn phi tuyến thường khó diễn giải hơn các biểu diễn tuyến tính
+
+=== Probabilistic Canonical Correlation Analysis (PCCA)
+_Định nghĩa_:
+Phiên bản xác suất của CCA, trong đó mối quan hệ giữa 2 tập dữ liệu được mô hình hoá dưới dạng phân phối xác suất
+
+_Mục tiêu_: 
+Mô hình hoá mối quan hệ phức tạp giữa 2 tập dữ liệu bằng cách sử dụng một mô hình xác suất, từ đó tìm ra biểu diễn có tương quan cao nhất.
+
+_Điểm mạnh_: 
+- Xử lý dữ liệu thiếu và nhiễu hiệu quả thông qua mô hình xác suất.
+- Cung cấp thông tin về độ tin cậy của kết quả
+
+_Điểm yếu_:
+- Ước lượng xác suất đòi hỏi nhiều tài nguyên tính toán
+- Phức tạp và khó diễn giải hơn các mô hình tuyến tính
+
+=== Multi-view Canonical Correlation Analysis (PCCA)
+_Định nghĩa_:
+MCCA mở rộng CCA để xử lý nhiều tập dữ liệu (multi-view) thay vì chỉ 2 tập, nhằm tìm thành phần chung
+
+_Mục tiêu_: 
+Mô hình hoá mối quan hệ phức tạp giữa 2 tập dữ liệu bằng cách sử dụng một mô hình xác suất, từ đó tìm ra biểu diễn có tương quan cao nhất.
+
+_Điểm mạnh_: 
+- Xử lý dữ liệu thiếu và nhiễu hiệu quả thông qua mô hình xác suất.
+- Cung cấp thông tin về độ tin cậy của kết quả
+
+_Điểm yếu_:
+- Ước lượng xác suất đòi hỏi nhiều tài nguyên tính toán
+- Phức tạp và khó diễn giải hơn các mô hình tuyến tính
+
+
 == Phương pháp
 
 == Nhận xét
@@ -95,109 +190,109 @@ A^(1/2) = sqrt(lambda1) e1 e1^T + sqrt(lambda2) e2 e2^T + sqrt(lambda2) e2 e2^T
 Tương quan chính tắc Mẫu
 
 Kiểm định mô hình
-= PHÂN TÍCH THÀNH PHẦN CHÍNH
+// = PHÂN TÍCH THÀNH PHẦN CHÍNH
 
 
-pca giảm chiều dữ liệu
+// pca giảm chiều dữ liệu
 
-tối ưu hiệu suất mô hình
+// tối ưu hiệu suất mô hình
 
---> phải nêu ra thách thức khi số chiều gia tăng, yêu cầu cấu hình lớn ra sao.
-nhóm chưa nêu rõ vì sao cần giảm nhiễu
+// --> phải nêu ra thách thức khi số chiều gia tăng, yêu cầu cấu hình lớn ra sao.
+// nhóm chưa nêu rõ vì sao cần giảm nhiễu
 
-ý nghĩa khoa học:
+// ý nghĩa khoa học:
 
-- trích xuất thông tin quan trọng: 
-thiếu: trong p biến, phải tìm được 1 không gian mới, không gian p chiều, về khoa học là tìm ra được một không gian mới
-có số chiều thấp hơn dữ liệu đầu vào
+// - trích xuất thông tin quan trọng: 
+// thiếu: trong p biến, phải tìm được 1 không gian mới, không gian p chiều, về khoa học là tìm ra được một không gian mới
+// có số chiều thấp hơn dữ liệu đầu vào
 
-dữ liệu nào không có tương 
-làm như vậy, giúp dữ liệu có tính khả tắc
+// dữ liệu nào không có tương 
+// làm như vậy, giúp dữ liệu có tính khả tắc
 
-xấp xỉ sao cho sai số là thấp nhất có thể
-
-
-- tối ưu hoá dữ liệu (how?)
-
-ý nghĩa thực tiễn: 
-- xử lý ảnh và thị giác máy tính: 
-thiếu: tìm không gian con để chiếu dữ liệu mặt xuống không gian con mới
-từ 1tr xuống còn 100 chiều, sau đó được lấy đi nhận dạng.
-
-(nói chung chung)
-- y học: giúp giảm chiều 
-
-- NLP: (dữ liệu 
-
-- Tài 
+// xấp xỉ sao cho sai số là thấp nhất có thể
 
 
-== phát biểu bài toán 
+// - tối ưu hoá dữ liệu (how?)
 
-(tìm tập hợp mới các biến số)
+// ý nghĩa thực tiễn: 
+// - xử lý ảnh và thị giác máy tính: 
+// thiếu: tìm không gian con để chiếu dữ liệu mặt xuống không gian con mới
+// từ 1tr xuống còn 100 chiều, sau đó được lấy đi nhận dạng.
 
-(chưa biết thành phần chính là gì)
+// (nói chung chung)
+// - y học: giúp giảm chiều 
 
-("giữ lại phần lớn phương sai còn lại" ???)
+// - NLP: (dữ liệu 
 
-Tìm ra một không gian con `m` chiều thấp hơn số chiều của không gian của tập mẫu ban đầu  
-- `m` biến không tương quan với nhau
-- phương sai của `m` biến lớn nhất có thể
-- sai số xấp xỉ trong không gian con `m` chiều là bé nhất
-
-Input:
-- tập dữ liệu dưới dạng ma trận X
-- n là số mẫu
-- p la số biến
-
-Output:
-Ma trận mới Z chứa các thành phần chính (???) giữ lại phần lớn phương sai (???) của dữ liệu gốc.
-
-== Các công đoạn chính của hệ thống
-
-PHƯƠNG PHÁP: ???
-
-Tập mẫu, mỗi điểm đang được tính từ gốc toạ độ.
-
-Ví dụ: Toạ độ
-
-Chọn 1 điểm mới là sample mean, tức trung bình mẫu. Từ điểm này tạo thành trục mới e1, e2
-
-$X = X - mu$
-
-Subtract mean: toạ độ của tất cả các điểm còn lại sẽ được tính theo hệ toạ độ mới.
-
-tính ma trận hiệp phương sai
-
-- Tính trị riêng và vector riêng
-
-$det(S - lambda I) = 0$
-
-Chọn K vector riêng có giá trị riêng lớn nhất để xây dựng ma trận U
-
-mỗi trục toạ độ của không gian con là 1 vector riêng.
-
-chiếu sample lên không gian mới.
-
-$ Z = hat(X) U_k$
-
-== Phương pháp
-
-$ X = U_K Z + macron(U)_K Y$
+// - Tài 
 
 
-(mạch logic...?)
+// == phát biểu bài toán 
 
-eigenface pca
+// (tìm tập hợp mới các biến số)
+
+// (chưa biết thành phần chính là gì)
+
+// ("giữ lại phần lớn phương sai còn lại" ???)
+
+// Tìm ra một không gian con `m` chiều thấp hơn số chiều của không gian của tập mẫu ban đầu  
+// - `m` biến không tương quan với nhau
+// - phương sai của `m` biến lớn nhất có thể
+// - sai số xấp xỉ trong không gian con `m` chiều là bé nhất
+
+// Input:
+// - tập dữ liệu dưới dạng ma trận X
+// - n là số mẫu
+// - p la số biến
+
+// Output:
+// Ma trận mới Z chứa các thành phần chính (???) giữ lại phần lớn phương sai (???) của dữ liệu gốc.
+
+// == Các công đoạn chính của hệ thống
+
+// PHƯƠNG PHÁP: ???
+
+// Tập mẫu, mỗi điểm đang được tính từ gốc toạ độ.
+
+// Ví dụ: Toạ độ
+
+// Chọn 1 điểm mới là sample mean, tức trung bình mẫu. Từ điểm này tạo thành trục mới e1, e2
+
+// $X = X - mu$
+
+// Subtract mean: toạ độ của tất cả các điểm còn lại sẽ được tính theo hệ toạ độ mới.
+
+// tính ma trận hiệp phương sai
+
+// - Tính trị riêng và vector riêng
+
+// $det(S - lambda I) = 0$
+
+// Chọn K vector riêng có giá trị riêng lớn nhất để xây dựng ma trận U
+
+// mỗi trục toạ độ của không gian con là 1 vector riêng.
+
+// chiếu sample lên không gian mới.
+
+// $ Z = hat(X) U_k$
+
+// == Phương pháp
+
+// $ X = U_K Z + macron(U)_K Y$
 
 
-kernel PCA: PCA kernel phi tuyến
+// (mạch logic...?)
 
-Robust PCA tách dữ liệu thành phần chính và nhiễu:
-N mẫu + p biến --> ma trận có k vector đặc trưng, có giảm số biến
-Incremental PCA
+// eigenface pca
 
-==> Cần giải thích ra thành phẩm cụ thể của từng công trình, không hiểu rõ phương pháp và sự liên quan của nó với PCA gốc
+
+// kernel PCA: PCA kernel phi tuyến
+
+// Robust PCA tách dữ liệu thành phần chính và nhiễu:
+// N mẫu + p biến --> ma trận có k vector đặc trưng, có giảm số biến
+// Incremental PCA
+
+// ==> Cần giải thích ra thành phẩm cụ thể của từng công trình, không hiểu rõ phương pháp và sự liên quan của nó với PCA gốc
 
 = PHÂN LỚP (1)
 Đây là đồ án của nhóm Pass.
@@ -296,10 +391,19 @@ _Các bước_:
 LDA được giới thiệu lần đầu bởi R.A.Fisher vào năm 1936 và được mở rộng bởi C.R.Rao cho bài toán phân lớp đa nhóm vào những năm 1940. 
 LDA được ứng dụng rộng rãi trong các bài toán phân loại dữ liệu đa biến với giả định toán học thuần tuý.
 
-// _Ý nghĩa khoa học:_
+_Các bước:_
+- Tìm tổ hợp tuyến tính của các đặc trưng sao cho sự phân tách giữa các lớp là tối ưu.
+- Tối đa hoá tỷ lệ giữa khoảng cách giữa trung bình các lớp và độ phân tán trong từng lớp.
 
+_Phân tách phân biệt:_ Tìm hướng chiếu $w$ để tối đa hoá hàm mục tiêu
+$
+  J(w) = "Khoảng cách giữa các lớp" / "Độ phân tán trong lớp"
+$
 
-
+_Phân loại:_
+- Chiếu mẫu mới $x$ lên $w$: $y = w^t x$
+- Tính khoảng cách giữa $y$ và trung bình các lớp
+- Gán nhãn cho mẫu giữa trên khoảng cách nhỏ nhất.
 
 === Hồi quy Logistic (Logistic Regression)
 
