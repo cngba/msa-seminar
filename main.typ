@@ -291,10 +291,8 @@ _Các bước_:
 
 == Công trình nghiên cứu liên quan
 
-===
 === Phân tích phân biệt (Linear Discriminant Analysis)
 
-==== Giới thiệu
 LDA được giới thiệu lần đầu bởi R.A.Fisher vào năm 1936 và được mở rộng bởi C.R.Rao cho bài toán phân lớp đa nhóm vào những năm 1940. 
 LDA được ứng dụng rộng rãi trong các bài toán phân loại dữ liệu đa biến với giả định toán học thuần tuý.
 
@@ -302,12 +300,117 @@ LDA được ứng dụng rộng rãi trong các bài toán phân loại dữ li
 
 
 
-==== Phương pháp
+
+=== Hồi quy Logistic (Logistic Regression)
+
+Hồi quy Logistic được phát triển bởi David Cox vào năm 1958 và được áp dụng rộng rãi từ những năm 1970 dưới dạng các mô hình tuyến tính tổng quát.
+Điểm đặc biệt là mô hình trực tiếp ước lượng *xác suất hậu nghiệm* ($P(Y = 1 | X)$), tức là xác suất để 1 mẫu đầu vào $X$ thuộc về lớp 1, mà không cần giả định rằng các đặc trưng đầu vào tuân theo phân phối chuẩn.
+
+==== Nguyên lý tổng quát
+Giai đoạn phân tích phân biệt: Mô hình hoá logit và ước lượng các tham số $v$ và $b$ qua phương pháp Triển vọng cực đại.
+
+Giai đoạn phân loại:
+- Tính xác suất dự đoán:
+$
+  hat(p) = 1 / 2 + e^(-(w^T x) + b)
+$
+- Gán nhãn: nếu $hat(p) > -0.5$ thì $x$ thuộc lớp 1, ngược lại thuộc lớp 0. Ngưỡng có thể được điều chỉnh theo yêu cầu bài toán.
+
+=== K-nearest Neighbors
+*Giới thiệu*: 
+Khái niệm k-NN được giới thiệu lần đầu bởi Fix & Hodges (1951) và được hoàn thiện bởi Cover & Hart (1967).
+Đây là phương pháp không tham số, sử dụng dữ liệu huấn luyện để phân loại mẫu mới dựa trên khoảng cách trong không gian đặc trưng.
+
+*Nguyên lý*:
+- Dựa trên bộ nhớ: lưu trữ toàn bộ dữ liệu huấn luyện
+- Phân loại mẫu mới bằng cách tìm *k* mẫu gần nhất theo khoảng cách và áp dụng nguyên tắc bỏ phiếu đa số.
+
+*Cơ chế hoạt động*: Lưu trữ toàn bộ tập huấn luyện 
+$
+  {(x_i, y_i)}^n_(i=1)
+$
+và hình thành không gian đặc trưng qua các khoảng cách.
+
+Các bước:
+- Tính khoảng cách từ mẫu mới $x$ đến tất cả các mẫu huấn luyện
+- Chọn $k$ mẫu có khoảng cách nhỏ nhất
+- Gán nhãn có $x$ theo quy tắc bỏ phiếu đa số từ $k$ giá trị đó.
+
+=== Cây quyết định - Decision Tree
+*Giới thiệu*:
+Cây quyết định là thuật toán học có giám sát được sử dụng cho phân loại và hồi quy, được giới thiệu bởi Ross Quinlan, sau này được Breiman et al. mở rộng thành CART.
+
+*Các bước*:
+- Tính toán độ đo thông tin (Entropy, Information Gain, Gini index, hoặc Gain Ratio) cho từng đặc trưng để đánh giá mức độ phân tách dữ liệu của chúng.
+- Chọn đặc trưng tốt nhất để phân chia dữ liệu, dựa trên độ đo đã tính ở bước 1 (thường là đặc trưng có Information Gain cao nhất hoặc Gini index thấp nhất).
+- Tạo nút phân chia trên cây với đặc trưng vừa chọn. Mỗi nhánh con tương ứng với một giá trị (hoặc một khoảng giá trị) của đặc trưng đó.
+- Đệ quy áp dụng các bước trên cho từng nhóm con dữ liệu tại mỗi nhánh con.
+- Dừng quá trình phân chia khi: Tất cả các mẫu trong một nhóm con thuộc cùng một lớp (dữ liệu thuần nhất); hoặc không còn đặc trưng nào để phân chia; hoặc đạt đến độ sâu tối đa đã định trước hoặc số lượng mẫu tại nút quá nhỏ ( để tránh overfitting).
+- Gán nhãn lớp cho các lá (nút cuối) dựa trên đa số mẫu trong nhóm con đó (nếu dữ liệu chưa thuần nhất hoàn toàn).
+
+=== Support Vector Machine
+SVM được giới thiệu bởi Boser, Guyon, và Vapnik vào năm 1992 và phổ biến năm 1995.
+
+*Phương pháp*:
+SVM tìm 1 siêu mặt phẳng để phân chia 2 lớp dữ liệu:
+$
+  f(x) = w^T x + b = 0
+$
+với:
+- $w$ là vector trọng số (pháp tuyến với siêu phẳng)
+- $b$ là bias
+- $x$ là đầu vào
+
+Điểm $x$ được phân loại theo dấu của $f(x)$.
+
+Support vectors là những điểm dữ liệu gần nhất với siêu mặt phẳng. Margin là khoảng cách từ siêu mặt phẳng đến các support vector. Ta muốn tối đa hoá margin:
+- Khoảng cách đến siêu phẳng là $1 / (||w||)$.
+- Hai lớp phải cách nhau ít nhất $2 / (||w||)$.
+
+Với dữ liệu tuyến tính hoàn toàn phân biệt được (hard-margin), ta tìm $w$, $b$ sao cho:
+$
+  (w, b) = arg min_(w,b) 1/2 ||w||^2_2
+$
+với ràng buộc:
+$
+  y_i(w^T x_i) + b >= 1 forall i
+$
+trong đó:
+- $(x_i, y_i)$ là các điểm huấn luyện
+- $y_i in {-1, 1}$
+
+Ta giải bài toán bằng cách xây dựng hàm Lagrange:
+$
+  L(w, b, alpha) = 1/2 ||w||^2 - sum_i alpha_i [y_i (w^T x_i + b) - 1]
+$
+- Tối ưu hoá bài toán Lagrange với $w$, $b$
+- Tìm cực đại với $alpha_i gt.eq 0$
+Tuy nhiên, việc giải bài toán này phức tạp khi số chiều $d$ của không gian dữ liệu và số điểm dữ liệu $N$ tăng cao.
+Người ta thường giải bài toán đối ngẫu của bài toán này, vì bài toán đối ngẫu có những tính chất mới để có thể giải nhanh và hiệu quả hơn.
+Kết quả biến đổi:
+$
+  max_alpha sum_i alpha_i - 1/2 sum alpha_i alpha_j y_i y_j x_i^T x_j
+$
+với ràng buộc:
+$
+  sum_i alpha_i y_i = 0, alpha_i gt.eq 0
+$
+Sau khi tìm được $alpha$, ta tính:
+$
+  w = sum_i alpha_i y_i x_i
+$
+Chọn 1 support vector để tính $b$:
+$
+  b = y_k - w^T x_k
+$
+Trường hợp dữ liệu không tuyến tính, ta thêm _soft-margin_ với tham số $C$ để cho phép một số điểm vi phạm margin.
+
+== Phương pháp
 Mục tiêu của LDA là tìm ra một tổ hợp tuyến tính của các biến ban đầu sao cho khi chiếu dữ liệu sang 1 không gian có chiều thấp hơn, các lớp được tách biệt rõ ràng hơn. Điều này được thể hiện thông qua việc tối đa hoá tỷ số giữa độ phân tán giữa các lớp và độ phân tán trong lớp.
 
 Hàm mục tiêu được diễn đạt như sau:
 
-_Giả định 1:_
+*_Giả định 1:_*
 Giả sử tồn tại K lớp, và dữ liệu của mỗi lớp $C_j$ được mô hình hoá bởi phân phối chuẩn đa biến, nghĩa là:
 $
   x | C_j tilde.op N(mu_j, Sigma_j), j = 1, ..., K
@@ -321,6 +424,31 @@ trong đó:
 - $mu_j$ là vector trung bình của lớp $C_j$
 - $Sigma_j$ là ma trận hiệp phương sai của lớp $C_j$.
 
+_Ý nghĩa_:
+- LDA sử dụng trung bình và phương sai để đo độ phân tán dữ liệu của mỗi lớp.
+- Nếu dữ liệu không tuân theo phân phối chuẩn, việc sử dụng trung bình và phương sai để đánh giá sẽ không còn chính xác, dẫn đến việc xác định sai cấu trúc của dữ liệu.
+
+*_Giả định 2:_*
+Giả sử các lớp có các ma trận hiệp phương sai $Sigma_1, Sigma_2, ..., Sigma_k$, và chúng bằng nhau:
+$
+  Sigma_1 = Sigma_2 = ... = Sigma_k = Sigma
+$
+
+_Ý nghĩa_:
+Giả định đảm bảo sự lan toả của dữ liệu (bao gồm cả phương sai và hiệp phương sai) là như nhau ở tất cả các lớp, từ đó các thành phần không phụ thuộc vào $x$ trong log-likelihood là giống nhau với mọi lớp. Điều này giúp rút gọn biểu thức so sánh giữa các lớp và chứng minh rằng ranh giới phân lớp là tuyến tính.
+
+LDA sử dụng ma trận hiệp phương sai chung (within-class covariance matrix, được tính bằng tổng các ma trận hiệp phương sai của từng lớp) để đánh giá độ phân tán của dữ liệu. Nếu các lớp có ma trận hiệp phương sai khác nhau, tổng hiệp phương sai nhỏ không còn phản ánh chính xác độ phân tán nhỏ của từng lớp, dẫn đến suy giảm hiệu quả phân tách tuyến tính.
+
+Qua chứng minh, định tính tuyến tính của ranh giới phân lớp của mô hình LDA được khẳng định, với giả định trên.
+
+*_Giả định 3:_* Dữ liệu i.i.d. và tham số không đổi
+
+Các quan sát ${x_1, x_2, ..., x_n}$ là các biến độc lập và có cùng phân phối trong một lớp.
+Các tham số $mu_j$ và $Sigma$ không thay đổi theo thời gian (không có hiện tượng concept drift).
+
+_Ý nghĩa:_
+- Giả định này đảm bảo rằng mỗi mẫu được thu thập đều đến từ cùng 1 phân phối xác định, cho phép ước lượng các tham số mô hình một cách ổn định.
+- Việc không thay đổi các tham số theo thời gian tạo điều kiện thuận lợi cho quá trình học và đánh giá mô hình, đảm bảo tính nhất quán trong toàn bộ quá trình quan sát.
 
 _Các đại lượng đo độ phân tán:_
 Giả sử dữ liệu được chia thành 2 lớp $C_1$ và $C_2$ với số mẫu $N_1$, $N_2$ tương ứng, mỗi quan sát $x in RR^p$. Khi chiếu dữ liệu lên một hướng $w$, trung bình sau chiếu của mỗi lớp được tính như sau:
@@ -378,66 +506,27 @@ $
 $
 - Phân lớp: Xác định ngưỡng (thường là trung điểm của $(w ast.basic)^T mu_1 $ và $(w ast.basic)^T mu_2 $) để gán nhãn cho các điểm dữ liệu
 
-=== Hồi quy Logistic (Logistic Regression)
-
-Hồi quy Logistic được phát triển bởi David Cox vào năm 1958 và được áp dụng rộng rãi từ những năm 1970 dưới dạng các mô hình tuyến tính tổng quát.
-Điểm đặc biệt là mô hình trực tiếp ước lượng *xác suất hậu nghiệm* ($P(Y = 1 | X)$), tức là xác suất để 1 mẫu đầu vào $X$ thuộc về lớp 1, mà không cần giả định rằng các đặc trưng đầu vào tuân theo phân phối chuẩn.
-
-==== Nguyên lý tổng quát
-Giai đoạn phân tích phân biệt: Mô hình hoá logit và ước lượng các tham số $v$ và $b$ qua phương pháp Triển vọng cực đại.
-
-Giai đoạn phân loại:
-- Tính xác suất dự đoán:
+*Các bước thực hiện LDA cho đa lớp*:
+- Tính trung bình cho mỗi lớp $mu_k$ và trung bình chung $mu$.
+- Within-class covariance:
 $
-  hat(p) = 1 / 1 + e^(-(w^T x) + b)
+  S_W = sum^C_(k=1) sum_(x in C_k) (x - mu_k) (x - mu_k)^T
 $
-- Gán nhãn: nếu $hat(p) > -0.5$ thì $x$ thuộc lớp 1, ngược lại thuộc lớp 0. Ngưỡng có thể được điều chỉnh theo yêu cầu bài toán.
-
-=== K-nearest Neighbors
-*Giới thiệu*: 
-Khái niệm k-NN được giới thiệu lần đầu bởi Fix & Hodges (1951) và được hoàn thiện bởi Cover & Hart (1967).
-Đây là phương pháp không tham số, sử dụng dữ liệu huấn luyện để phân loại mẫu mới dựa trên khoảng cách trong không gian đặc trưng.
-
-*Nguyên lý*:
-- Dựa trên bộ nhớ: lưu trữ toàn bộ dữ liệu huấn luyện
-- Phân loại mẫu mới bằng cách tìm *k* mẫu gần nhất theo khoảng cách và áp dụng nguyên tắc bỏ phiếu đa số.
-
-*Cơ chế hoạt động*: Lưu trữ toàn bộ tập huấn luyện 
+- Between-class covariance:
 $
-  {(x_i, y_i)}^n_(i=1)
+  S_B = sum^C_(k=1) N_k (mu_k - mu) (mu_k - mu)^T
 $
-và hình thành không gian đặc trưng qua các khoảng cách.
-
-Các bước:
-- Tính khoảng cách từ mẫu mới $x$ đến tất cả các mẫu huấn luyện
-- Chọn $k$ mẫu có khoảng cách nhỏ nhất
-- Gán nhãn có $x$ theo quy tắc bỏ phiếu đa số từ $k$ giá trị đó.
-
-=== Cây quyết định - Decision Tree
-*Giới thiệu*:
-Cây quyết định là thuật toán học có giám sát được sử dụng cho phân loại và hồi quy, được giới thiệu bởi Ross Quinlan, sau này được Breiman et al. mở rộng thành CART.
-
-*Các bước*:
-- Tính toán độ đo thông tin (Entropy, Information Gain, Gini index, hoặc Gain Ratio) cho từng đặc trưng để đánh giá mức độ phân tách dữ liệu của chúng.
-- Chọn đặc trưng tốt nhất để phân chia dữ liệu, dựa trên độ đo đã tính ở bước 1 (thường là đặc trưng có Information Gain cao nhất hoặc Gini index thấp nhất).
-- Tạo nút phân chia trên cây với đặc trưng vừa chọn. Mỗi nhánh con tương ứng với một giá trị (hoặc một khoảng giá trị) của đặc trưng đó.
-- Đệ quy áp dụng các bước trên cho từng nhóm con dữ liệu tại mỗi nhánh con.
-- Dừng quá trình phân chia khi: Tất cả các mẫu trong một nhóm con thuộc cùng một lớp (dữ liệu thuần nhất); hoặc không còn đặc trưng nào để phân chia; hoặc đạt đến độ sâu tối đa đã định trước hoặc số lượng mẫu tại nút quá nhỏ ( để tránh overfitting).
-- Gán nhãn lớp cho các lá (nút cuối) dựa trên đa số mẫu trong nhóm con đó (nếu dữ liệu chưa thuần nhất hoàn toàn).
-
-=== Support Vector Machine
-SVM được giới thiệu bởi Boser, Guyon, và Vapnik vào năm 1992 và phổ biến năm 1995.
-
-*Phương pháp*:
-// SVM tìm 1 siêu phẳng để phân chia 2 lớp dữ liệu:
-// $
-//   f(x) = w^T x + b
-// $
-// với:
-// - $w$ là vector trọng số (pháp tuyến với siêu phẳng)
-// - $b$ là bias
-// - $x$ là đầu vào
-
+- Giải bài toán eigenvalue:
+$
+  S_W^(-1) S_B W = lambda W 
+$
+với $lambda = J(W)$ 
+- Chọn nghiệm tối ưu: Sắp xếp các trị riêng theo thứ tự giảm dần và chọn các eigenvector ứng với các giá trị lớn nhất để tạo thành $W ast.basic$, với số cột của $W ast.basic$ không vượt quá $C - 1$.
+- Chiếu dữ liệu: Với mỗi $x in RR^D$, tính:
+$
+  y = (W ast.basic)^T x
+$
+- Phân lớp: Gán nhãn cho $x$ dựa trên khoảng cách của $y$ đến các trung bình chiếu của các lớp.
 
 == Nhận xét
 - Các nội dung bị lướt qua nhanh, gây khó hiểu
@@ -445,84 +534,7 @@ SVM được giới thiệu bởi Boser, Guyon, và Vapnik vào năm 1992 và ph
 - Không có khái niệm phương sai giữa các lớp
 - Nhiều chi tiết toán không rõ?
 
-
-
 /*
-
-
-
-Gắn nhãn cho 
-
-Định nghĩa: nói quá nhanh, ko hiểu nói gì
-
-Công đoạn 1: 
-
-Công đoạn 2: Tập dữ liệu đã tiền xử lý
-
-Input:
-- tập dữ liệu đã tiền xử lý
-- nhãn (labels)
-
-Output: 
-- Không gian đặc trưng tối ưu giúp phân tách rõ ràng giữa các lớp
-==> Tập mẫu trong không gian mới có tính khả tắc
-
-Công đoạn 3: Tìm luật phân lớp 
-
-CĐ 3 mới là tìm luật phân lớp.
-
-Ý nghĩa khoa học:
-
-Ví dụ cũng chưa cụ thể.
-
-Phân lớp, trong bài toán thực tế vì có liên quan đến tiên đoán (prediction).
-Ví dụ: Ảnh u xương --> u đại bào, u tiểu bào, lành tính hay ác tính $->$ dẫn đến bài toán phân lớp
-
-
-
-
-== Công trình nghiên cứu liên quan
-
-LDA: Linear Discriminant Analysis
-
-k-NN
-
-SVM
-
-== Thực nghiệm bài toán hai lớp
-
-
-
-== Thực nghiệm bài toán đa lớp
-
-Giải bài toán bằng LDA
-
-
-
-Decision Tree
-
-
-Giả định: Một số bộ dữ liệu có thể tuân theo hoặc không
-
-Giả định 1 là về độ phân phối chuẩn.
-
-Giả định 2:
-
-Tìm một không gian con để chiếu tập mẫu xuống có tính khả tắc. Không gian con được tính bằng 
-
-
-x là sample trong không gian p biến, 
-
-tính sample của mình trong một không gian mới: m là tính cho không gian mới
-$w * x$ là chuyển qua không gian mới
-
-Between-class covariance matrix
-
-$(m_1 - m_2)^2  = w^T (mu_1 - mu_2) (mu_1 - mu_2)^T w$
-
-*Mẫu số chưa bao giờ là ma trận*
-
-
 *Notes:*
 - PCA, CCA, LDA, đều quy vào vector riêng - giá trị riêng
 - Nhân tử Larange
@@ -867,7 +879,12 @@ Trong đó:
 - $n$ là số phần tử có trong mẫu.
 
 === Các bước giải bài toán kiểm định
-
++ Phát biểu giả thuyết không $H_0$ và giả thuyết thay thế $H_1$.
++ Xác định mức ý nghĩa $alpha$
++ Tính trung bình mẫu, độ lệch chuẩn (một biến) hoặc ma trận hiệp phương sai (đa biến)
++ Tính giá trị kiểm định thống kê, giá trị tới hạn
++ Xác định miền bác bỏ
++ Kết luận bác bỏ hay không bác bỏ giả thuyết $H_0$ với độ tin cậy $(1 - alpha)$
 
 == Nhận xét
 - Ví dụ xác thực, code đạt chuẩn 
