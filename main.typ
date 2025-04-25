@@ -60,7 +60,9 @@
 
 #let url(uri) = link(uri, raw(uri))
 
-= Phân tích tương quan chính tắc
+#include "1.typ"
+
+= PHÂN TÍCH TƯƠNG QUAN CHÍNH TẮC
 
 == Khái niệm
 == Phương pháp
@@ -93,7 +95,7 @@ A^(1/2) = sqrt(lambda1) e1 e1^T + sqrt(lambda2) e2 e2^T + sqrt(lambda2) e2 e2^T
 Tương quan chính tắc Mẫu
 
 Kiểm định mô hình
-= Phân tích thành phần chính
+= PHÂN TÍCH THÀNH PHẦN CHÍNH
 
 
 pca giảm chiều dữ liệu
@@ -196,9 +198,258 @@ N mẫu + p biến --> ma trận có k vector đặc trưng, có giảm số bi�
 Incremental PCA
 
 ==> Cần giải thích ra thành phẩm cụ thể của từng công trình, không hiểu rõ phương pháp và sự liên quan của nó với PCA gốc
-/*
-= Phân lớp (1)
+
+= PHÂN LỚP (1)
 Đây là đồ án của nhóm Pass.
+== Giới thiệu
+
+_Định nghĩa_:
+
+Phân lớp là quá trình xây dựng một mô hình học máy nhằm gán nhãn cho các đối tượng dựa trên các đặc trưng đã được quan sát; cụ thể là tìm một hàm số:
+$
+  C: RR^p arrow.r {1,2,...,g}
+$
+sao cho với mỗi vector đặc trưng $x$ thuộc $RR^p$, hàm $C$ sẽ gán cho $x$ một nhãn thuộc tập ${1,2,...,g}$.
+Trong đó:
+- $p$ là số lượng đặc trưng của đối tượng
+- $g$ là số lượng lớp đã định nghĩa trước
+
+=== Ý nghĩa khoa học
+- Giải quyết bài toán phân biệt và phân loại
+- Đóng góp về mặt lý thuyết cho các mô hình toán học hay thuật toán mới
+- Hỗ trợ nghiên cứu khoa học: Kiểm định giả thuyết, khám phá cấu trúc dữ liệu
+- Phát triển học máy và trí tuệ nhân tạo
+
+=== Ý nghĩa ứng dụng
+- Y tế và chăm sóc sức khoẻ: Chẩn đoán bệnh, phân tích hình ảnh y tế
+- Tài chính - Ngân hàng: Đánh giá rủi ro, phát hiện gian lận
+- Marketing và bán hàng: Phân khúc khách hàng, dự đoán xu hướng
+- An ninh mạng: Phát hiện xâm nhập
+- Xử lý ngôn ngữ: Phân loại văn bản
+- Khoa học xã hội và Nghiên cứu thị trường: Phân tích khảo sát, dự đoán hành vi
+
+== Phát biểu bài toán
+_Đầu vào_:
+- Tập dữ liệu huấn luyện:
+$
+  D_"train" = {(x_i, y_i)}^N_(i=1)
+$
+- Tập dữ liệu kiểm tra:
+$
+  D_"test" = {x_j}^M_(j=1)
+$
+
+_Đầu ra_:
+- Hàm phân lớp:
+$
+  hat(y) = C(x), hat(y) in {1,2,...,g}
+$
+- Nhãn dự đoán cho các đối tượng mới:
+$
+  {hat(y)_j}^M_(j=1), hat(y)_j = C(x_j)
+$
+
+== Framework
+=== Thu thập và tiền xử lý dữ liệu
+_Đầu vào_: 
+- Dữ liệu thô
+- Nhãn
+
+_Đầu ra_: Dữ liệu sạch đã qua xử lý
+
+_Các bước_:
+- Thu thập dữ liệu thô và nhãn tương ứng
+- Xử lý các vấn đề của dữ liệu: thiếu giá trị, giá trị rỗng, nhiễu
+- Tiền xử lý: Mã hoá biến định tính, chuẩn hoá dữ liệu
+- Trả dữ liệu sạch
+
+=== Phân tích phân biệt
+_Đầu vào_: 
+- Tập dữ liệu đã tiền xử lý
+- Nhãn
+
+_Đầu ra_: 
+- Các quy tắc / hàm phân biệt cho việc gán nhãn
+- Không gian đặc trưng tối ưu giúp phân tách rõ ràng giữa các lớp
+
+_Các bước_:
+- Phân tách sự khác biệt giữa các lớp
+- Xây dựng các quy tắc / hàm phân biệt nhằm gán nhãn hiệu quả
+
+=== Phân tích phân biệt
+_Đầu vào_: 
+- Các điểm dữ liệu mới cần phân loại
+- Không gian đặc trưng tối ưu
+- Hàm phân biệt
+
+_Đầu ra_: Nhãn phân loại cho dữ liệu mới
+
+_Các bước_:
+- Tính toán giá trị phân biệt cho các điểm dữ liệu mới
+- Gán nhãn dựa vào ngưỡng hoặc tiêu chí quyết định
+
+
+== Công trình nghiên cứu liên quan
+
+===
+=== Phân tích phân biệt (Linear Discriminant Analysis)
+
+==== Giới thiệu
+LDA được giới thiệu lần đầu bởi R.A.Fisher vào năm 1936 và được mở rộng bởi C.R.Rao cho bài toán phân lớp đa nhóm vào những năm 1940. 
+LDA được ứng dụng rộng rãi trong các bài toán phân loại dữ liệu đa biến với giả định toán học thuần tuý.
+
+// _Ý nghĩa khoa học:_
+
+
+
+==== Phương pháp
+Mục tiêu của LDA là tìm ra một tổ hợp tuyến tính của các biến ban đầu sao cho khi chiếu dữ liệu sang 1 không gian có chiều thấp hơn, các lớp được tách biệt rõ ràng hơn. Điều này được thể hiện thông qua việc tối đa hoá tỷ số giữa độ phân tán giữa các lớp và độ phân tán trong lớp.
+
+Hàm mục tiêu được diễn đạt như sau:
+
+_Giả định 1:_
+Giả sử tồn tại K lớp, và dữ liệu của mỗi lớp $C_j$ được mô hình hoá bởi phân phối chuẩn đa biến, nghĩa là:
+$
+  x | C_j tilde.op N(mu_j, Sigma_j), j = 1, ..., K
+$
+hay hàm mật độ của lớp $C_j$ được cho bởi:
+$
+  f_j(X) = 1 / ( (2 pi)^(P/2) |Sigma_j|^(1/2) ) exp {-1/2 (x - mu_j)^T Sigma_j^(-1) (x - mu_j)}
+$
+trong đó:
+- $x$ là vector quan sát có $p$ thành phần
+- $mu_j$ là vector trung bình của lớp $C_j$
+- $Sigma_j$ là ma trận hiệp phương sai của lớp $C_j$.
+
+
+_Các đại lượng đo độ phân tán:_
+Giả sử dữ liệu được chia thành 2 lớp $C_1$ và $C_2$ với số mẫu $N_1$, $N_2$ tương ứng, mỗi quan sát $x in RR^p$. Khi chiếu dữ liệu lên một hướng $w$, trung bình sau chiếu của mỗi lớp được tính như sau:
+$
+  m_1 = 1/N_1 sum_(x in C_1) w^T x \
+  m_2 = 1/N_2 sum_(x in C_2) w^T x
+$
+
+Tương tự, độ phân tán (sai số) của mỗi lớp sau chiếu được định nghĩa là:
+$
+  s_1^2 = sum_(x in C_1)(w^T x - m_1)^2 \
+  s_2^2 = sum_(x in C_2)(w^T x - m_2)^2
+$
+
+_Between-class covariance matrix:_
+Khoảng cách giữa 2 điểm sau chiếu được đo bằng hiệu của trung bình các điểm sau chiếu, cụ thể:
+$
+  (m_1 - m_2)^2 = w^T (mu_1 - mu_2) (mu_1 - mu_2)^T w
+$
+Ta định nghĩa between-class covariance matrix:
+$
+  S_B = (mu_1 - mu_2)(mu_1 - mu_2)^T
+$
+Như vậy ta có:
+$
+  (m_1 - m_2)^2 = w^T S_B w
+$
+
+
+*Hàm mục tiêu của LDA*:
+_Mục tiêu:_
+Mục tiêu của LDA là tìm một hướng $w$ sao cho tỷ số giữa độ phân tán giữa lớp và độ phân tán trong lớp được tối đa hoá.
+Ban đầu, ta xây dựng hàm mục tiêu dựa trên đại lượng đo sự phân tán:
+$
+  J(w) = frac((m_1 - m_2)^2,s_1^2 + s_2^2)
+$
+trong đó:
+- $m_1$, $m_2$ là trung bình các điểm sau chiếu của từng lớp
+- $s_1^2$, $s_2^2$ là tổng bình phương sai lệch của các điểm so với trung bình trong từng lớp
+
+_Hàm mục tiêu biểu diễn qua_ $S_B$ _và_ $S_W$:
+$
+  J(w) = frac(w^T S_B w, w^T S_W w) 
+$
+
+*Các bước thực hiện LDA cho 2 lớp*:
+- Giải bài toán eigenvalue: 
+$
+  S_W^-1 S_B w = lambda w
+$
+- Chọn nghiệm tối ưu: Sắp xếp các trị riêng (eigenvalue) theo thứ tự giảm dần rồi chọn vector riêng (eigenvector) ứng với trị riêng lớn nhất làm nghiệm tối ưu $w ast.basic$
+- Chiếu dữ liệu: Với mỗi $x$, tính giá trị chiếu:
+$
+  y = (w ast.basic)^T x
+$
+- Phân lớp: Xác định ngưỡng (thường là trung điểm của $(w ast.basic)^T mu_1 $ và $(w ast.basic)^T mu_2 $) để gán nhãn cho các điểm dữ liệu
+
+=== Hồi quy Logistic (Logistic Regression)
+
+Hồi quy Logistic được phát triển bởi David Cox vào năm 1958 và được áp dụng rộng rãi từ những năm 1970 dưới dạng các mô hình tuyến tính tổng quát.
+Điểm đặc biệt là mô hình trực tiếp ước lượng *xác suất hậu nghiệm* ($P(Y = 1 | X)$), tức là xác suất để 1 mẫu đầu vào $X$ thuộc về lớp 1, mà không cần giả định rằng các đặc trưng đầu vào tuân theo phân phối chuẩn.
+
+==== Nguyên lý tổng quát
+Giai đoạn phân tích phân biệt: Mô hình hoá logit và ước lượng các tham số $v$ và $b$ qua phương pháp Triển vọng cực đại.
+
+Giai đoạn phân loại:
+- Tính xác suất dự đoán:
+$
+  hat(p) = 1 / 1 + e^(-(w^T x) + b)
+$
+- Gán nhãn: nếu $hat(p) > -0.5$ thì $x$ thuộc lớp 1, ngược lại thuộc lớp 0. Ngưỡng có thể được điều chỉnh theo yêu cầu bài toán.
+
+=== K-nearest Neighbors
+*Giới thiệu*: 
+Khái niệm k-NN được giới thiệu lần đầu bởi Fix & Hodges (1951) và được hoàn thiện bởi Cover & Hart (1967).
+Đây là phương pháp không tham số, sử dụng dữ liệu huấn luyện để phân loại mẫu mới dựa trên khoảng cách trong không gian đặc trưng.
+
+*Nguyên lý*:
+- Dựa trên bộ nhớ: lưu trữ toàn bộ dữ liệu huấn luyện
+- Phân loại mẫu mới bằng cách tìm *k* mẫu gần nhất theo khoảng cách và áp dụng nguyên tắc bỏ phiếu đa số.
+
+*Cơ chế hoạt động*: Lưu trữ toàn bộ tập huấn luyện 
+$
+  {(x_i, y_i)}^n_(i=1)
+$
+và hình thành không gian đặc trưng qua các khoảng cách.
+
+Các bước:
+- Tính khoảng cách từ mẫu mới $x$ đến tất cả các mẫu huấn luyện
+- Chọn $k$ mẫu có khoảng cách nhỏ nhất
+- Gán nhãn có $x$ theo quy tắc bỏ phiếu đa số từ $k$ giá trị đó.
+
+=== Cây quyết định - Decision Tree
+*Giới thiệu*:
+Cây quyết định là thuật toán học có giám sát được sử dụng cho phân loại và hồi quy, được giới thiệu bởi Ross Quinlan, sau này được Breiman et al. mở rộng thành CART.
+
+*Các bước*:
+- Tính toán độ đo thông tin (Entropy, Information Gain, Gini index, hoặc Gain Ratio) cho từng đặc trưng để đánh giá mức độ phân tách dữ liệu của chúng.
+- Chọn đặc trưng tốt nhất để phân chia dữ liệu, dựa trên độ đo đã tính ở bước 1 (thường là đặc trưng có Information Gain cao nhất hoặc Gini index thấp nhất).
+- Tạo nút phân chia trên cây với đặc trưng vừa chọn. Mỗi nhánh con tương ứng với một giá trị (hoặc một khoảng giá trị) của đặc trưng đó.
+- Đệ quy áp dụng các bước trên cho từng nhóm con dữ liệu tại mỗi nhánh con.
+- Dừng quá trình phân chia khi: Tất cả các mẫu trong một nhóm con thuộc cùng một lớp (dữ liệu thuần nhất); hoặc không còn đặc trưng nào để phân chia; hoặc đạt đến độ sâu tối đa đã định trước hoặc số lượng mẫu tại nút quá nhỏ ( để tránh overfitting).
+- Gán nhãn lớp cho các lá (nút cuối) dựa trên đa số mẫu trong nhóm con đó (nếu dữ liệu chưa thuần nhất hoàn toàn).
+
+=== Support Vector Machine
+SVM được giới thiệu bởi Boser, Guyon, và Vapnik vào năm 1992 và phổ biến năm 1995.
+
+*Phương pháp*:
+// SVM tìm 1 siêu phẳng để phân chia 2 lớp dữ liệu:
+// $
+//   f(x) = w^T x + b
+// $
+// với:
+// - $w$ là vector trọng số (pháp tuyến với siêu phẳng)
+// - $b$ là bias
+// - $x$ là đầu vào
+
+
+== Nhận xét
+- Các nội dung bị lướt qua nhanh, gây khó hiểu
+- Ví dụ chưa cụ thể
+- Không có khái niệm phương sai giữa các lớp
+- Nhiều chi tiết toán không rõ?
+
+
+
+/*
+
+
 
 Gắn nhãn cho 
 
@@ -277,19 +528,19 @@ $(m_1 - m_2)^2  = w^T (mu_1 - mu_2) (mu_1 - mu_2)^T w$
 - Nhân tử Larange
 */
 
-= Phân lớp (2)
+= PHÂN LỚP (2)
 Đây là đồ án của nhóm Vstatic.
-
-== Ý nghĩa ứng dụng
+== Giới thiệu
+=== Ý nghĩa ứng dụng
 - Phân loại đối tượng
 - Phân loại hình ảnh
 - Phân loại khách hàng
 - Nhận diện cảm xúc
 
-== Mục tiêu
+=== Mục tiêu
 Xây dựng một hàm phân biệt để gán một quan sát $x$ có $d$ đặc trưng, vào 1 trong $k$ lớp, sao cho tối ưu được độ phân biệt giữa các lớp.
 
-Xét trường hợp 2 lớp và đa lớp
+Xét trường hợp 2 lớp và đa lớp.
 
 == Công trình liên quan
 === Phân biệt Triển vọng cực đại - Maximum Likelihood Discriminant:
@@ -376,13 +627,13 @@ Thách thức:
 - Xác định số cụm tối ưu
 - Xử lý dữ liệu nhiều chiều
 
-== Ý nghĩa khoa học
+=== Ý nghĩa khoa học
 - Hiểu bản chất phức tạp của các mối quan hệ đa biến
 - Đánh giá mức độ đa chiều của dữ liệu
 - Xác định ngoại lai
 - Đề xuất các giả thuyết thú vị về mối quan hệ giữa các đối tượng
 
-== Ý nghĩa ứng dụng
+=== Ý nghĩa ứng dụng
 - Marketing: Chọn các thị trường thử nghiệm; Phân loại và cơ cấu công ty theo tổ chức
 - Tâm lý học: Tìm ra các loại tính cách trên cơ sở các bảng câu hỏi
 - Khảo cổ học: Phân loại các đồ vật nghệ thuật trong các thời kỳ khác nhau
@@ -513,107 +764,6 @@ Sự khác biệt giữa Hierarchical và Partitioning:
 // == phương pháp liên quan
 // - maximum likelihood discriminant
 
-= PHÂN TÍCH PHÂN BIỆT (Linear Discriminant Analysis)
-
-== Giới thiệu
-LDA được giới thiệu lần đầu bởi R.A.Fisher vào năm 1936 và được mở rộng bởi C.R.Rao cho bài toán phân lớp đa nhóm vào những năm 1940. 
-LDA được ứng dụng rộng rãi trong các bài toán phân loại dữ liệu đa biến với giả định toán học thuần tuý.
-
-_Ý nghĩa khoa học:_
-
-_Ý nghĩa ứng dụng:_
-- Y tế và chăm sóc sức khoẻ: Chẩn đoán bệnh, phân tích hình ảnh y tế
-- Tài chính - Ngân hàng: Đánh giá rủi ro, phát hiện gian lận
-- Marketing và bán hàng: Phân khúc khách hàng, dự đoán xu hướng
-- An ninh mạng: Phát hiện xâm nhập
-- Xử lý ngôn ngữ: Phân loại văn bản
-- Khoa học xã hội và Nghiên cứu thị trường: Phân tích khảo sát, dự đoán hành vi
-== Phát biểu bài toán
-_Đầu vào:_
-- Tập dữ liệu đã tiền xử lý
-- Nhãn lớp (Labels)
-
-_Đầu ra:_
-- Các quy tắc hoặc hàm phân biệt cho 
-
-== Phương pháp
-Mục tiêu của LDA là tìm ra một tổ hợp tuyến tính của các biến ban đầu sao cho khi chiếu dữ liệu sang 1 không gian có chiều thấp hơn, các lớp được tách biệt rõ ràng hơn. Điều này được thể hiện thông qua việc tối đa hoá tỷ số giữa độ phân tán giữa các lớp và độ phân tán trong lớp.
-
-Hàm mục tiêu được diễn đạt như sau:
-
-_Giả định 1:_
-Giả sử tồn tại K lớp, và dữ liệu của mỗi lớp $C_j$ được mô hình hoá bởi phân phối chuẩn đa biến, nghĩa là:
-$
-  x | C_j tilde.op N(mu_j, Sigma_j), j = 1, ..., K
-$
-hay hàm mật độ của lớp $C_j$ được cho bởi:
-$
-  f_j(X) = 1 / ( (2 pi)^(P/2) |Sigma_j|^(1/2) ) exp {-1/2 (x - mu_j)^T Sigma_j^(-1) (x - mu_j)}
-$
-trong đó:
-- $x$ là vector quan sát có $p$ thành phần
-- $mu_j$ là vector trung bình của lớp $C_j$
-- $Sigma_j$ là ma trận hiệp phương sai của lớp $C_j$.
-
-
-_Các đại lượng đo độ phân tán:_
-Giả sử dữ liệu được chia thành 2 lớp $C_1$ và $C_2$ với số mẫu $N_1$, $N_2$ tương ứng, mỗi quan sát $x in RR^p$. Khi chiếu dữ liệu lên một hướng $w$, trung bình sau chiếu của mỗi lớp được tính như sau:
-$
-  m_1 = 1/N_1 sum_(x in C_1) w^T x \
-  m_2 = 1/N_2 sum_(x in C_2) w^T x
-$
-
-Tương tự, độ phân tán (sai số) của mỗi lớp sau chiếu được định nghĩa là:
-$
-  s_1^2 = sum_(x in C_1)(w^T x - m_1)^2 \
-  s_2^2 = sum_(x in C_2)(w^T x - m_2)^2
-$
-
-_Between-class covariance matrix:_
-Khoảng cách giữa 2 điểm sau chiếu được đo bằng hiệu của trung bình các điểm sau chiếu, cụ thể:
-$
-  (m_1 - m_2)^2 = w^T (mu_1 - mu_2) (mu_1 - mu_2)^T w
-$
-Ta định nghĩa between-class covariance matrix:
-$
-  S_B = (mu_1 - mu_2)(mu_1 - mu_2)^T
-$
-Như vậy ta có:
-$
-  (m_1 - m_2)^2 = w^T S_B w
-$
-
-
-*Hàm mục tiêu của LDA*:
-_Mục tiêu:_
-Mục tiêu của LDA là tìm một hướng $w$ sao cho tỷ số giữa độ phân tán giữa lớp và độ phân tán trong lớp được tối đa hoá.
-Ban đầu, ta xây dựng hàm mục tiêu dựa trên đại lượng đo sự phân tán:
-$
-  J(w) = frac((m_1 - m_2)^2,s_1^2 + s_2^2)
-$
-trong đó:
-- $m_1$, $m_2$ là trung bình các điểm sau chiếu của từng lớp
-- $s_1^2$, $s_2^2$ là tổng bình phương sai lệch của các điểm so với trung bình trong từng lớp
-
-_Hàm mục tiêu biểu diễn qua_ $S_B$ _và_ $S_W$:
-$
-  J(w) = frac(w^T S_B w, w^T S_W w) 
-$
-
-*Các bước thực hiện LDA cho 2 lớp*:
-- Giải bài toán eigenvalue: 
-$
-  S_W^-1 S_B w = lambda w
-$
-- Chọn nghiệm tối ưu: Sắp xếp các trị riêng (eigenvalue) theo thứ tự giảm dần rồi chọn vector riêng (eigenvector) ứng với trị riêng lớn nhất làm nghiệm tối ưu $w ast.basic$
-- Chiếu dữ liệu: Với mỗi $x$, tính giá trị chiếu:
-$
-  y = (w ast.basic)^T x
-$
-- Phân lớp: Xác định ngưỡng (thường là trung điểm của $(w ast.basic)^T mu_1 $ và $(w ast.basic)^T mu_2 $) để gán nhãn cho các điểm dữ liệu
-== Nhận xét
-- Không có khái niệm phương sai giữa các lớp
-- Nhiều chi tiết toán không rõ?
 
 
 = SUY DẪN KẾT QUẢ LIÊN QUAN ĐẾN QUẦN THỂ DỰA TRÊN THÔNG TIN MẪU
@@ -624,11 +774,11 @@ $
 _Vai trò:_
 Diễn giải dữ liệu, tiến đến đưa ra kết luận thực tiễn, hữu ích, tiếp tục tiến đến sử dụng cho các quyết định trong tương lai.
 
-_Ý nghĩa khoa học_:
+=== Ý nghĩa khoa học
 - Khả năng tổng quát hoá (generalization) và dự đoán (prediction)
 - Tăng hiệu quả và tính khả thi trong việc thu thập dữ liệu trong nghiên cứu
 
-_Ý nghĩa ứng dụng_:
+=== Ý nghĩa ứng dụng
 - Kiểm soát chất lượng và quản lý rủi ro: Kiểm tra một nhóm mẫu từ mỗi lô sản xuất, nhằm giám sát chất lượng sản phẩm
 - Phục vụ y khoa và dịch vụ y tế công cộng: Thu thập dữ liệu mẫu để theo dõi mức độ lây lan của bệnh trong một vùng, giúp lên kế hoạch cho các biện pháp can thiệp và phân bố nguồn lực hợp lý.
 - Nghiên cứu về môi trường và xã hội: Thu thập dữ liệu về chất lượng không khí từ một vài trạm giám sát để đánh giá mức độ ô nhiễm trong 1 thành phố, qua đó đề xuất các chính sách cải thiện chất lượng không khí.
@@ -725,15 +875,15 @@ Trong đó:
 - Cần giải thích phân phối student
 
 
-= TÁI LẤY MẪU (RESAMPLING)
-Suy luận thống kê
+// = TÁI LẤY MẪU (RESAMPLING)
+// Suy luận thống kê
 
-- Lấy ví dụ về tái lấy mẫu
-- Chưa rõ về việc tái lấy mẫu: mẫu xuất hiện mới sẽ từ đâu ra? mẫu có rồi thì sao?
-- Ví dụ tái lấy mẫu nhằm mục đích gì?
-- Phát biểu đồ án không rõ ngay từ đầu?
+// - Lấy ví dụ về tái lấy mẫu
+// - Chưa rõ về việc tái lấy mẫu: mẫu xuất hiện mới sẽ từ đâu ra? mẫu có rồi thì sao?
+// - Ví dụ tái lấy mẫu nhằm mục đích gì?
+// - Phát biểu đồ án không rõ ngay từ đầu?
 
-trung bình của nhóm có dùng thuốc mới và nhóm không dùng thuốc mới
+// trung bình của nhóm có dùng thuốc mới và nhóm không dùng thuốc mới
 
 = CÁC KHÁI NIỆM CƠ BẢN VỀ PHÂN TÍCH THỐNG KÊ DỮ LIỆU NHIỀU BIẾN
 
