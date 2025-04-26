@@ -34,7 +34,7 @@
 )
 
 #show: iclr2025.with(
-  title: [Phân tích thống kê dữ liệu nhiều biến#linebreak()Seminar],
+  title: [Phân tích thống kê dữ liệu nhiều biến#linebreak()Bài tập lớp-nhà: Seminar],
   authors: authors,
   keywords: (),
   abstract: [
@@ -1156,3 +1156,247 @@ Giải đáp: Ta cần ước lượng các tham số chưa biết sao cho hàm 
 Kiểm định giả thuyết:
 - Kiểm định tỷ số hợp lý: $l_0$ ở đâu ra? Trang sau có liên quan gì đến trang trước
 - Kiểm định giả thuyết khi biết ma trận hiệp phương sai: ta cần biết gì? $mu$
+
+= Phân tích yếu tố (Factor analysis)
+== Giới thiệu
+*Phân tích yếu tố* là một kỹ thuật thống kê, sử dụng để khám pha cấu trúc cơ bản của một tập hợp các biến bằng cách xác định một số lượng nhỏ hơn các biến tiềm ẩn không thể quan sát được gọi là các yếu tố. Về bản chất, phân tích yếu tố có mục đích giải thích các mối tương quan hoặc hiệp phương sai giữa nhiều biến quan sát được bằng cách tiết lộ các chiều cơ bản chung của chúng.
+
+Khác với phân tích thành phần chính (PCA) tập trung vào giải tích phương sai tối đa, phân tích yếu tố mô hình hóa cụ thể hiệp phương sai giữa các biến, giả định rằng các biến quan sát được là các tổ hợp tuyến tính của các yếu tố cơ bản cộng với các thành phần phương sai duy nhất. Tiền đề cơ bản là các mối tương quan giữa các biến tồn tại vì các biến này có chung các yếu tố.
+
+=== Ý nghĩa khoa học
+- Hiển thị các cấu trúc ẩn: cung cấp một khuôn khổ toán học để phát hiện các yếu tố cơ bản không thể đo lường trực tiếp nhưng lại ảnh hưởng đến các biến quan sát được.
+- Phân tích yếu tố được sử dụng để xác minh các công trình lý thuyết có phù hợp với mô hình dữ liệu thực nghiệm hay không.
+- Nghiên cứu tính đa chiều: giúp xác định có bao nhiêu chiều có ý nghĩa tồn tại trong một tập hợp các biến tương quan, cung cấp thông tin chi tiết về tính phức tạp của hiện tượng đang được nghiên cứu.
+
+=== Ý nghĩa ứng dụng
+- Giảm lượng dữ liệu: Cô đọng các tập hợp biến lớn thành một số lượng yếu tố nhỏ hơnd, giúp dữ liệu phức tạp dễ quản lý và dễ diễn giải hơn.
+- Phát triển thang đo: Khi phát triển các công cụ đo lường hoặc khảo sát, phân tích nhân tố giúp xác định các mục đo lường cùng một cấu trúc cơ bản, cho phép đo lường hiệu quả và hợp lệ hơn.
+
+== Phát biểu bài toán
+_Đầu vào:_
+- Ma trận dữ liệu đa biến $X$ chứa các phép đo của $p$ biến trong $n$ quan sát. Mỗi hàng biểu diễn một quan sát và mỗi cột biểu diễn một biến. Thường được trình bày dưới dạng ma trận tương quan ($R$) hoặc ma trận hiệp phương sai ($S$) cho thấy mối quan hệ giữa các biến.
+- Đặc điểm kỹ thuật của mô hình: Số lượng yếu tố k cần trích xuất (trong đó $k$ < $p$), lựa chọn phương pháp ước tính (khả năng xảy ra tối đa, các yếu tố chính, các thành phần chính)
+
+_Đầu ra:_
+- Ma trận tải yếu tố (Q): Ma trận $p times k$ chứa các hệ số biểu diễn cách mỗi biến tải lên từng yếu tố. Các phần tử $q j #sym.ell$  biểu thị mối tương quan giữa biến $j$ và yếu tố #sym.ell. Các tải giúp giải thích ý nghĩa của từng yếu tố.
+- Phương sai cụ thể ($Psi$): Ma trận đường chéo chứa các phương sai duy nhất ($Psi j j$) cho mỗi biến Biểu diễn một phần của phương sai của biến không được giải thích bởi các yếu tố chung.
+- Điểm tương đồng ($h^2$): Đối với mỗi biến, tỷ lệ phương sai của biến được giải thích bởi các yếu tố chung, được tính là tổng các tải trọng yếu tố bình phương cho biến đó $h^2 j = Sigma(q^2 j #sym.ell)$ cho biến $j$ trên tất cả các yếu tố
+- Điểm số yếu tố: Giá trị ước tính của các yếu tố ngầm cho mỗi quan sát trong tập dữ liệu.
+- Thông số đánh giá độ phù hợp (Model Fit statistics): Các biện pháp cho biết mô hình yếu tố xấp xỉ ma trận tương quan hoặc ma trận hiệp phương sai quan sát được tốt như thế nào.
+
+Mối quan hệ toán học giữa đầu vào và đầu ra có thể được thể hiện thông qua phương trình phân tích nhân tố cơ bản:
+$
+X = Q F + U + mu
+$
+Trong đó $X$ là ma trận dữ liệu đầu vào, $Q$ (tải trọng), $F$ (yếu tố) và $U$ (yếu tố cụ thể) biểu thị các thành phần đầu ra và $mu$ là vector trung bình.
+
+== Phương pháp
+=== Mô hình phân tích yếu tố (Factor Analysis model)
+Với các giả định:
+- $E(F) = 0$ (các yếu tố có giá trị trung bình bằng không)
+- var($F$) = $I_k$ (các yếu tố không tương quan và được chuẩn hóa)
+- $E(U) = 0$ (các yếu tố cụ thể có giá trị trung bình bằng không)
+- Cov($U_i, U_j$) = 0 đối với $i != j$ (các yếu tố cụ thể không tương quan)
+- Cov($F, U$) = 0 (các yếu tố chung và cụ thể không tương quan)
+- Var($U$) = $Psi$ = diag($Psi_(1 1), ..., Psi_(p p)$) (ma trận chéo của các phương sai cụ thể)
+Dựa trên các giả định này, cấu trúc hiệp phương sai của X là:
+$
+Sigma = E[(X-mu)(X-mu)'] = Q Q' + Psi
+$
+
+Đối với mỗi biến $X_j$, ta có thể viết:
+$
+X_j = sum_(ℓ=1)^k q_(j ℓ) F_ℓ + U_j + μ_j
+$
+Phương sai của $X_j$ là:
+$
+  text("Var")(X_j) = sum_(ℓ=1)^k q²_(j ℓ) + Psi_(j j)
+$
+Trong đó $h^2_j = sum_(ℓ=1)^k q^2_(j ℓ)$ được gọi là điểm tương đồng(phương sai chung).
+
+=== Phương pháp hợp lý cực đại (Maximum Likelihood Method-MLM)
+Phương pháp này giả định tính chuẩn đa biến và tối đa hóa hàm log-likelihood:
+$
+#sym.ell (X; mu; Q; Psi)= -n/2 [log{abs(2π(Q Q' + Ψ))}+tr{(Q Q' + Ψ)^(-1)S}]
+$
+Trong đó: n là kích thước mẫu, S là ma trận hiệp phương sai mẫu, tr là toán tử theo dõi
+
+Kiểm tra tính đầy đủ của mô hình với k yếu tố sử dụng thống kê tỷ lệ khả năng:
+$
+-2log(text("likelihood ratio")) = n log(abs(Q Q' + Psi) / abs(S))
+$
+Theo sau phân phối $chi^2$ xấp xỉ với $[(p-k)^2-(p+k)]/2$ bậc tự do.
+
+=== Phương pháp nhân tố chính (Principal Factor Method)
++ Bắt đầu bằng ước tính ban đầu ở điểm tương đồng $tilde(h)_j$ (sử dụng tương quan bội bình phương hoặc tương quan tuyệt đối tối đa).
++ Tính toán ước tính phương sai cụ thể: $
+tilde(Psi) _ j j = 1 - tilde(h)^2_j
+$
++ Tạo ma trận tương quan rút gọn: $
+R - tilde(Psi)
+$
++ Thực hiện phân tích phổ: $
+R - tilde(Psi) = sum_(ell=1) ^p gamma_#sym.ell gamma_(#sym.ell gamma')_ell
+$
++ Giữ nguyên k vectơ riêng đầu tiên tương ứng với k giá trị riêng lớn nhất
++ Tính toán tải nhân tố: 
+$
+q_(ell) = sqrt(lambda_ell) gamma_ell text("với") #sym.ell = 1,...,k
+$
++ Tính toán phương sai cụ thể đã cập nhật: $
+tilde(Psi)_j j = 1 - sum_(#sym.ell=1)^k) q²_(j #sym.ell)
+$
++ Lặp lại các bước 3-7 cho đến khi hội tụ.
+
+=== Phương pháp thành phần chính (Principle Component Method)
++ Chéo hóa ma trận hiệp phương sai mẫu: $S = Gamma Lambda Gamma'$
++ Lấy k vector riêng và giá trị riêng đầu tiên để xây dựng các hệ số tải nhân số: $accent(Q, "^")=[sqrt(lambda_1) gamma_1, ..., sqrt(lambda_k) gamma_k]$
++ Ước tính các phương sai cụ thể như các phần tử đường chéo của
+
+$S- accent(Q, "^") accent(Q, "^")'$: $accent(Psi, "^")_(j j)=s_(j j) - sum_(ell=1)^k accent(q, "^")^2_(j ell)$
+
+Xấp xỉ của phương pháp thỏa: $
+sum(i,j)(S-accent(Q, "^") accent(Q, "^") - Psi)^2_(i j) <=lambda^2_(k+1)+...+lambda^k_p
+$
+
+=== Phương pháp xoay (Rotational method)
+Để cải thiện khả năng diễn giải, ta có thể áp dụng ma trận xoay G trực giao: $Q^*=Q G$
+
+Với hai yếu tố, G có thể dược biễu diễn dưới dạng ma trận xoay: $G(theta)=[cos theta sin theta; -sin theta cos theta]$
+
+Phương pháp varimax tìm góc $theta$ tối đa hóa:
+
+$
+V=1/p (sum_(l=1)^k [(sum_(j=1)^p (accent(q, "~")_(j ell))^4)- (1/p sum_(j=1)^p (accent(q, "~")_(j ell))^2)^2]
+$
+
+Trong đó $accent(q, "~")_(j ell)=accent(q, "~")_(j ell)/accent(h, "~")_j$ là các tải trọng chuẩn hóa.
+
+
+=== Điểm số yếu tố
+Phương pháp hồi quy ước tính điểm số yếu tố cho mỗi quan sất: $accent(f, "^")_i=accent(Q, "^")' S^(-1)(x_i-accent(x, "-"))$
+
+Đối với các biến chuẩn hóa: $accent(f, "^")=accent(Q, "^")'R^(-1) z_i$
+
+Trong đó $z_i=D_S^(1/2)(x_i-accent(x, "-"))$ là các quan sát chuẩn hóa. Nếu các yếu tố được xoay, điểm số sẽ được xoay tương ứng: $accent(f, "^")_i=G accent(f,"^")_i)$
+
+=== Kiểm định dữ liệu
+*Phương pháp kiểm định Kaiser-Meyer-Olkin* đo lường mức độ tương quan giữa các biến quan sát. Có công thức:
+$
+K M O = (Sigma Sigma r^2_(j j))/(Sigma Sigma r^2_(j j)+Sigma Sigma p^2_(i j))
+$
+Trong đó:
+- Ma trận tương quan: r = Corr(X, X)
+- Ma trận nghịch đảo tương quan: $a=r^(-1)$
+- Ma trận tương quan toàn phần: $p_(i j)=-(a_(i j)) / sqrt(a_(i i) a_(j j))$
+Mục đích: Kiểm định để xem nếu dữ liệu phù hợp để phân tích yếu tô bằng cách đo tỷ lệ phương sai giữa các biến, có thể là phương sai chung.
+
+Đánh giá: Chỉ số KMO nằm trong khoảng (0, 1):
+
+- Trên 0.9: Rất tốt
+- 0.80 - 0.89: Tốt
+- 0.70 - 0.79: Khá 
+- 0.60 - 0.69: Trung bình
+- 0.50 - 0.59: Kém
+- Dưới 0.50: Không thể phân tích yếu tố
+
+= KIỂM ĐỊNH GIẢ THUYẾT (Hypothesis testing)
+== Giới thiệu
+Kiểm định giả thuyết là một phương pháp được sử dụng để đưa ra quyết định hoặc suy luận về một tham số quần thể dựa trên dữ liệu mẫu. Nó bao gồm việc xây dựng hai giả thuyết cạnh tranh:
+- Giả thuyết không (Null) $(H_0)$: Biểu thị giả định hoặc vị trí mặc định, thường không đề xuất hiệu ứng hoặc một điều kiện cụ thể như $theta=theta_0$
+- Giả thuyết thay thế $(H_1)$: Đại diện cho một tuyên bố hoặc điều kiện cạnh tranh khi $H_0$ sai.
+Mục tiêu của kiểm định giả thuyết là xác định liệu có đủ bằng chứng trong dữ liệu mẫu để bác bỏ $H_0$ và chấp nhận $𝐻_1$.Một khía cạnh quan trọng của quy trình này là kiểm soát lỗi loại I (xác suất bác bỏ $𝐻_0$ khi nó đúng), được ký hiệu là $alpha$
+== Phát biểu bài toán
+_Đầu vào_:
+- Giả thuyết không ($H_0$): Phát biểu rằng tham số $theta$ phụ thuộc vào tập con 0 của không gian tham số $R_q$ (tập hợp giả thuyết không)
+- Giả thuyết thay thế ($H_1$): Phát biểu rằng tham số $theta$ thuộc vào tập hợp khác (1).
+- Dữ liệu mẫu: Một tập hợp các quan sát mẫu được sử dụng để đánh giá giả thuyết.
+- Mức ý nghĩa ($alpha$): Xác suất chấp nhận rủi ro sai lầm Loại I (bác bỏ $H_0$ khi $H_0$ đúng).
+_Đầu ra_:
+- Kết quả kiểm định: Quyết định bác bỏ $𝐻_0$ (nếu đủ bằng chứng) hoặc chấp nhận $𝐻_0$ (nếu không đủ bằng chứng).
+- Vùng bác bỏ (Rejection Region): Tập hợp các giá trị của dữ liệu mẫu dẫn đến bác bỏ $H_0$
+- Giá trị thống kê kiểm định: Một chỉ số định lượng dùng để so sánh với ngưỡng được xác định bởi $alpha$
+== Phương pháp
+=== Kiểm định tỷ lệ khả năng (Likelihood Ratio Test-LRT)
+Một phương pháp thống kê phổ biến, dựa trên nguyên lý tỷ lệ khả năng. So sánh khả năng xảy ra của dữ liệu dưới giả thuyết không ($H_0$) với giả thuyết thay thế ($H_1$) thông qua thống kê tỷ lệ khả năng:
+$
+lambda(X)=(sup_(theta in Theta_0)L(X;theta))/(sup_(theta in Theta_1)L(X;theta))
+$
+Trong đó $L(X;theta)$ là hàm khả năng; sup là giá trị lớn nhất trong khả năng dưới mỗi giả thuyết.
+
+*Thống kê kiểm định:* Sử dụng log của tỷ lệ khả năng:
+$
+-2 log lambda(X) = 2(ell^*_1-ell^*_0)
+$
+Với $ell^*_0$ là log của tỷ lệ khả năng tối đa dưới $H_0$, $ell^*_1$ là log của tỷ lệ khả năng tối đa dưới $H_1$
+
+*Vùng bác bỏ*: Giả thuyết $H_0$ bị bác bỏ nếu:
+$
+-2log lambda(X)>chi^2_(1-alpha;q-r)
+$
+Trong đó:
+- $q$ là số chiều không gian tham số 1
+- $r$ là số chiều không gian tham số 0
+- $chi^2$ là phân phối chi bình phương
+
+*Định lý Wilks*:
+Với các kích thước mẫu lớn ($n->infinity$), dưới các điều kiện thường quy:
+$
+-2log lambda (X) ~ chi^2_(q-r)
+$
+
+*Ứng dụng kiểm định*:
+Khi kiểm định giá trị trung bình của phân phối chuẩn đa biến $N_p (mu, Sigma)$
+- Nếu $Sigma$ đã biết:
+$
+-2 log lambda = n(accent(X, "^")-mu_0)' Sigma^(-1) (accent(X, "^")-mu_0) ~ chi^2_p
+$
+- Nếu $Sigma$ chưa biết:
+$
+(n-1)(accent(X, "^")-mu_0)'Sigma^-1(accent(X,"^")-mu_0)~T^2(p, n-1)
+$
+=== Kiểm định giả thuyết tuyến tính
+Cách tiếp cận tổng quát để kiểm tra các ràng buộc tuyến tính trên trung bình vector (
+$mu$ ) hoặc hệ số hồi quy (
+$beta$) của một mô hình tuyến tính. Phương pháp này được sử dụng phổ biến trong các bài toán kiểm định thực tế về trung bình và hệ số hồi quy.
+
+*Dạng của giả thuyết tuyến tính*: Giả thuyết tuyến tính thường được biểu diễn dưới dạng: 
+$
+H_0: A_mu = a
+$
+Với: A là ma trận có kích thước $q * p$; a là vector có kích thước $q * 1$; và $q<=p$
+
+*Các trường hợp kiểm định*:
+- Trường hợp 1: Ma trận hiệp phương sai ($Sigma$) đã biết.
+Dưới $H_0$, thống kê kiểm định:
+$
+n(A accent(X, "^")-a)'(A Sigma A')^-1 (A accent(X, "^")-a) ~ chi^2_q
+$
+- Trường hợp 2: Ma trận hiệp phương sai $Sigma$ chưa biết:
+$
+(n-1)(A accent(X, "^")-a)'(A Sigma A')^-1 (A accent(X, "^")-a) ~ T^2(q, n-1)
+$
+
+=== Tập dữ liệu Boston Housing
+*Phân nhóm*
+
+Dữ liệu được chia thành hai nhóm:
+- Nhóm 1: 256 quận có giá nhà $X_14$ nhỏ hơn hoặc bằng giá trị trung vị
+- Nhóm 2: 250 quận có giá nhà $X_14$ lớn hơn giá trị trung vị.
+
+*Kiểm định trung bình vector*:
+- Kiểm định giả thuyết: $H_0: mu_1=mu_2$ vói $mu_1, mu_2 in R^5$.
+- Sử dụng biến $X_1, X_5, X_8, X_11, X_13$. Giá trị thống kê F=126.30 lớn hơn ngưỡng $F_(0.95;5,500)=2.23$, do đó bác bỏ $H_0$.
+- Các khoảng tin cậy đồng thời cho $delta_j=mu_(1,j)-mu_(2,j)$ chỉ ra rằng các $mu_j$ đều khác không.
+
+*Kiểm tra yếu tố giáp sông (biến $X_4$):*
+- Sử dụng các biến $X_5, X_8, X_9, X_12, X_13, X_14$.
+- Nhóm 1: 35 quận giáp sông; Nhóm 2: 471 quận không giáp sông.
+- Giá trị $F=5.81$, vượt ngưỡng $F_(0.95;6,499)=2.12$, bác bỏ $H_0$.
+- Tuy nhiên, chỉ biến $X_14$ (giá nhà) có khoản tin cậy không chứa 0: $delta_14 in(0.0014, 0.5084)$
+
+*Kiểm định mô hình hồi quy tuyến tính*:
+- Kiểm định tổng quát: $H_0: (beta_1,..., beta_13)=0$
+Giá trị F=123.20
+- Kiểm tra riêng biệt: $H_0:beta_4=0$ (ảnh hưởng của yếu tố giáp sông). Giá trị $F=9.0125$, bác bỏ $H_0$.
+- Mô hình rút gọn: $X_14$ phụ thuộc vào $X_4, X_5, X_6, X_8,..., X_13$. Mô hình rút gọn $R^2=0.763$, gần với $R^2=0.765$ của mô hình đầy đủ. 
