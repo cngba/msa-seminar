@@ -149,47 +149,93 @@ _Định nghĩa_:
 MCCA mở rộng CCA để xử lý nhiều tập dữ liệu (multi-view) thay vì chỉ 2 tập, nhằm tìm thành phần chung
 
 _Mục tiêu_: 
-Mô hình hoá mối quan hệ phức tạp giữa 2 tập dữ liệu bằng cách sử dụng một mô hình xác suất, từ đó tìm ra biểu diễn có tương quan cao nhất.
+Tối đa hoá tương quan giữa các điểm dữ liệu khác nhau, trích xuất thành phần chung đại diện cho mối quan hệ xuyên suốt các tập dữ liệu.
 
 _Điểm mạnh_: 
-- Xử lý dữ liệu thiếu và nhiễu hiệu quả thông qua mô hình xác suất.
-- Cung cấp thông tin về độ tin cậy của kết quả
+- Hỗ trợ nhiều view: Có thể đồng thời xử lý nhiều tập dữ liệu, phù hợp với các bài toán multi-modal learning
+- Tổng quát hoá tốt: Mở rộng khả năng của CCA để áp dụng trong các bài toán phức tạp hơn
 
 _Điểm yếu_:
-- Ước lượng xác suất đòi hỏi nhiều tài nguyên tính toán
-- Phức tạp và khó diễn giải hơn các mô hình tuyến tính
-
+- Khi số lượng view tăng, bài toán trở nên phức tạp hơn
+- Đòi hỏi dữ liệu lớn để đạt được hiệu suất cao
 
 == Phương pháp
+Cho $bold(X)^(1)$ và $bold(X)^(2)$ lần lượt là vector ngẫu nhiên $(p times 1)$ và $(q times 1)$ chiều.
+Để thuận tiện, ta xem như $p lt.eq q$.
 
-== Nhận xét
+Cho $Sigma_11$ và $Sigma_22$ lần lượt là các ma trận hiệp phương sai của $bold(X)^(1)$ và $bold(X)^(2)$. Cho $Sigma_12 = Sigma_21^T$ là ma trận phương sai giữa $bold(X)^(1)$ và $bold(X)^(2)$.
 
-Phương pháp: 
+Với mỗi cặp vector, gọi là vector hệ số chính tắc $a in RR^p$, $b in RR^q$ bất kỳ, đặt:
+$
+  U = a^T X^(1), V = b^T X^(2)
+$
+là các tổ hợp tuyến tính của lần lượt $bold(X)^(1)$ và $bold(X)^(2)$.
 
-Tương quan giữa các biến chính tắc và các biến gốc:
-- Các biến chính tắc không có tính chất tự nhiên nên khó phân ích
-
-ý nghĩa hình học:
-- Xét đại lượng mang giá trị thực
-
-Cho A = [3 3 3 \\
-		3 3 3 \\
-		3 3 3]
-		
-$lambda_1 lambda_2 lambda_3
+$
+  bold(X)^(1) = [X_1^(1), X_2^(1),...,X_p^(1)]^T
+$
+$
+  bold(X)^(2) = [X_1^(2), X_2^(2),...,X_p^(2)]^T
 $
 
-A^(1/2) = sqrt(lambda1) e1 e1^T + sqrt(lambda2) e2 e2^T + sqrt(lambda2) e2 e2^T 
+*Tương quan giữa các biến chính tắc và các biến gốc:*
 
-== Thực nghiệm
+Các biến chính tắc không có các tính chất tự nhiên nên khó phân tích và đặt mối quan hệ với dữ liệu gốc
+Để sử dụng được trực tiếp các biến chính tắc $U$, $V$, ta cần thu thập dữ liệu và thực hiện kiểm định thống kê.
+
+Ta có thể xem tương quan giữa các biến gốc của mỗi tập biến với các biến chính tắc nhằm xác định mức độ tương quan của mỗi biến gốc với mối quan hệ giữa 2 tập biến.
+Tương quan này có thể xác định từ các biến chính tắc của quần thể nên ta không cần thu thập dữ liệu.
+
+*Liên hệ giữa CCA và các tương quan truyền thống:* 
+
+Thay vì tương quan giữa 2 biến liên tục, CCA tìm tương quan lớn nhất cho tổ hợp tuyến tính của 2 tập biến 
+
+$
+  |"Corr"( bold(X)^(1), bold(X)^(2) )| =  |"Corr"( a bold(X)^(1), b bold(X)^(2) )| = frac((a b)"Cov"(bold(X)^(1), bold(X)^(2)),sqrt(a^2 "Cov"(bold(X)^(1))) sqrt(b^2 "Cov"(bold(X)^(2))))
+$
+
+Thay vì sử dụng từng đặc điểm riêng lẻ, CCA sẽ tìm ra các "biến tổng hợp" cho mỗi tập sao cho tương quan giữa chúng là cao nhất, qua đó làm nổi bật mối quan hệ tiềm ẩn giữa 2 nhóm đặc điểm này.
+
+*Tương quan chính tắc mẫu:*
+
+Ta không có được các ma trận hiệp phương sai của tổng thể, mà chỉ có dữ liệu các quan sát, vậy nên ta sử dụng ma trận hiệp phương sai mẫu làm ước tính cho ma trận hiệp phương sai của tổng thể.
+Chỉ cần mẫu đủ lớn, ma trận hiệp phương sai của tổng thể có thể được ước lượng với sai số nhỏ thông qua ma trận hiệp phương sai của mẫu (tức phương sai mẫu hội tụ theo xác suất đến phương sai tổng thể). Vậy nên, chỉ cần thay thế phương sai tổng thể bằng phương sai mẫu.
+
+*Kiểm định mô hình:*
+
+Cho tương quan chính tắc đầu tiên khác 0 và các tương quan chính tắc còn lại bằng 0, sau đó kiểm tra giả thuyết trên.
+Nếu giả thuyết bị bác bỏ, ta lại cho rằng hai bước chính tắc đầu tiên khác 0, và $p - 2$ biến chính tắc còn lại bằng 0 và tiếp tục kiểm định.
+== Nhận xét
+
+// Phương pháp: 
+
+// Tương quan giữa các biến chính tắc và các biến gốc:
+// - Các biến chính tắc không có tính chất tự nhiên nên khó phân ích
+
+// ý nghĩa hình học:
+// - Xét đại lượng mang giá trị thực
+
+// Cho A = [3 3 3 \\
+// 		3 3 3 \\
+// 		3 3 3]
+		
+// $lambda_1 lambda_2 lambda_3
+// $
+
+// A^(1/2) = sqrt(lambda1) e1 e1^T + sqrt(lambda2) e2 e2^T + sqrt(lambda2) e2 e2^T 
+
+// == Thực nghiệm
 
 - Tương quan truyền thống là gì? 
 - Cần thực hiện so sánh phương pháp truyền thống và phương pháp mới, song song
-- Cần có điều kiện bài toán và thông tin  kiểm nghiệm rõ ràng hơn
+- Cần có điều kiện bài toán và thông tin kiểm nghiệm rõ ràng hơn
 
-Tương quan chính tắc Mẫu
+// Tương quan chính tắc Mẫu
 
-Kiểm định mô hình
+// Kiểm định mô hình
+
+
+// ##################################################################
 // = PHÂN TÍCH THÀNH PHẦN CHÍNH
 
 
