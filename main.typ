@@ -1042,15 +1042,191 @@ Trong đó:
 - Cần giải thích phân phối student
 
 
-// = TÁI LẤY MẪU (RESAMPLING)
-// Suy luận thống kê
+= TÁI LẤY MẪU (RESAMPLING)
+== Giới thiệu
+*Suy luận thống kê*: 
+- Để kết luận về tổng thể, ta sẽ lấy ra các kết luận ấy từ một mẫu kết quả quan sát của tổng thể.
+- Các phương pháp truyền thống thường đặt các giả định rằng mẫu được rút ra từ phân phối cho trước.
 
-// - Lấy ví dụ về tái lấy mẫu
-// - Chưa rõ về việc tái lấy mẫu: mẫu xuất hiện mới sẽ từ đâu ra? mẫu có rồi thì sao?
-// - Ví dụ tái lấy mẫu nhằm mục đích gì?
-// - Phát biểu đồ án không rõ ngay từ đầu?
+_Hạn chế của phương pháp truyền thống_:
+- Người đọc phải chấp nhận giả định, trong trường hợp giả định không được đáp ứng thì không áp dụng được.
+- Chỉ tập trung vào ước lượng một số tham số thống kê như trung bình, khó có thể ước lượng tham số khác: trung vị, tỷ lệ $arrow$ Hạn chế khả năng ứng dụng
 
-// trung bình của nhóm có dùng thuốc mới và nhóm không dùng thuốc mới
+Khi máy tính đã phổ biến, khả năng tính toán của máy tính phát triển, có khả năng tạo ra hàng nghìn, hàng triệu phép tính trong thời gian ngắn, điều này có ý nghĩa trong việc tạo ra một bộ dữ liệu mới thật lớn từ dữ liệu đã có, là nền tảng phát triển và hiện thực hoá các phương pháp suy luận thống kê mới, trong đó có *tái lấy mẫu*.
+
+*Tái lấy mẫu* là kỹ thuật thống kê dựa trên tạo ra nhiều mẫu mới từ dữ liệu gốc một cách lặp lại. Từ dữ liệu ban đầu, chúng ta lấy mẫu nhiều lần (có hoặc không hoàn lại) để tạo ra các tập dữ liệu mới, sau đó tính toán các giá trị thống kê cần thiết.
+
+Phương pháp này linh hoạt với nhiều loại dữ liệu, do không yêu cầu các giả định về phân phối của dữ liệu. 
+
+=== Ý nghĩa khoa học
++ Không cần giả định về phân phối dữ liệu
++ Đánh giá được độ chính xác của các ước lượng
++ Tính tổng quát cao và linh hoạt
++ Phù hợp với dữ liệu nhỏ và không cân bằng
++ Hỗ trợ mạnh mẽ cho Khoa học dữ liệu và Học máy.
+
+
+=== Ý nghĩa ứng dụng
+Y học và Sinh học:
+- Đánh giá hiệu quả điều trị qua phân tích dữ liệu lâm sàng
+- Phân tích dữ liệu sinh học như gene, protein, v.v...
+
+Kinh tế - Tài chính:
+- Ước lượng rủi ro trong các mô hình tài chính
+- Dự báo thị trường 
+
+Khoa học môi trường:
+- Phân tích dữ liệu khí hậu: Giảm sai số, cải thiện phân tích dữ liệu và dự đoán xu hướng biến đổi khí hậu
+- Nghiên cứu sinh thái: Kiểm tra tính ổn định của các mô hình phân tích về đa dạng sinh học
+
+== Phát biểu bài toán
+_Bài toán_: Tạo ra các mẫu quan sát mới từ dữ liệu quan sát đã có
+
+_Đầu vào_: Một mẫu $X = {x_1, x_2, ..., x_n}$, kích thước $n$, được quan sát từ quần thể
+
+_Đầu ra_: Các mẫu dữ liệu mới, cùng kích thước $n$, được tạo ra từ dữ liệu ban đầu (tức là phải có liên hệ với dữ liệu ban đầu)
+
+_Thách thức_:
+- Phụ thuộc vào chất lượng dữ liệu gốc, có thể bị nhiễu, thiếu sót, không đại diện cho quần thể
+- Khó áp dụng với dữ liệu có cấu trúc
+phức tạp (dữ liệu chuỗi thời gian, dữ liệu
+không gian, dữ liệu phân cấp).
+- Không phù hợp với dữ liệu cực kì lớn vì
+giới hạn ở tài nguyên tính toán
+- Cần kiến thức nền vững chắc về thống
+kê để giải thích kết quả.
+
+== Phương pháp
+=== Kiểm định hoán vị (Permutation)
+
+==== Mô tả
+- Là phương pháp lâu đời nhất, từ công trình của Fisher những năm 1930
+- Là loại kiểm định thống kê phi tham số
+- Giúp đánh giá xem sự khác biệt giữa 2 nhóm có phải là do tác động thực sự của một yếu tố nào đó, hay chỉ do ngẫu nhiên
+- Chỉ thay đổi cách sắp xếp dữ liệu, không thêm hay xoá dữ liệu.
+
+==== Nguyên lý
+- Thực hiện xáo trộn dữ liệu nhiều lần, sau đó tính toán
+phân phối của thống kê kiểm định qua các lần hoán vị.
+- Nếu tỷ lệ các giá trị thống kê hoán vị có độ lớn bằng
+hoặc cực đoan hơn so với giá trị quan sát được thấp
+hơn 0.05 (tức là $"p-value" <= 0.05$), ta bác bỏ giả thuyết
+không $H_0$.
+
+==== Ưu điểm
+So với kiểm định tham số truyền thống,
+kiểm định hoán vị:
+- Không cần giả định về phân phối
+chuẩn hay phương sai.
+- Chính xác hơn so với các kiểm định
+tham số nếu mẫu nhỏ hoặc dữ liệu
+không chuẩn.
+
+==== Các bước thực hiện
+1. Tính toán giá trị thống kê quan sát được tobs trên dữ liệu:
+- Trung bình mẫu
+- Chênh lệch trung bình (t-statistic)
+- P-value
+
+2. Sử dụng phương pháp ngẫu nhiên để tính phân phối của $t$
+dưới giả thuyết không:
+- Thực hiện $N$ lần hoán vị ngẫu nhiên trên dữ liệu.
+- Với mỗi mẫu dữ liệu được hoán vị $i$, tính giá trị thống kê $t_i$.
+- Thủ tục này cung cấp phân phối của $t$ dưới giả thuyết không $H_0$:
+$P(t|H_0)$.
+
+Mục đích: Xây dựng một phân phối giả lập của giá trị thống kê trong
+trường hợp giả thuyết không $H_0$ đúng - không có sự khác biệt giữa
+hai nhóm, nghĩa là các giá trị có thể hoán vị ngẫu nhiên.
+
+3. Tính toán giá trị p-value:
+
+Kiểm định một phía:
+- Phải:
+$
+  "p-value" = frac(|{t_i gt.eq t_"obs"}|,N)
+$
+- Trái:
+$
+  "p-value" = frac(|{t_i lt.eq t_"obs"}|,N)
+$
+
+Kiểm định hai phía:
+$
+  "p-value" = frac(|{|t_i| lt.eq |t_"obs"|}|,N)
+$
+
+Nếu $"p-value" lt.eq 0.05$ thì bác bỏ giả thuyết không $H_0$.
+Ngược lại, nếu $"p-value" gt.eq 0.05$, chưa đủ cơ sở bác bỏ giả thuyết không $H_0$.
+
+=== Bootstrapping
+_Mục tiêu:_ Đánh giá độ biến thiên (sai số chuẩn, độ tin cậy)
+của các chỉ số hiệu suất hoặc các tham số ước
+lượng
+
+_Nguyên lý_: Mô phỏng phân phối của tham số cần ước lượng bằng
+cách tạo nhiều tập dữ liệu bằng cách chọn có hoàn lại.
+
+_Mô tả_:
+- Chọn ngẫu nhiên có thay thế
+$arrow$ Hữu dụng với số lượng mẫu có hạn (rất ít)
+- Thường dùng để tính toán phương sai hoặc
+khoảng tin cậy quanh một giá trị thống kê nào đó
+của mẫu quan sát với phân phối chưa biết
+
+==== Các bước thực hiện
+Gọi mẫu là $X = {X_1, X_2, ..., X_n}$ có kích thước $n$ được lấy từ 1 quần thể P.
+Một đại lượng thống kê $theta$, mô tả P có thể được ước lượng bằng cách tính $theta$ từ X.
+
++ Lấy 1 mẫu có kích thước $n$ từ S với phương pháp thay thế, sao cho mỗi phần tử được chọn với xác suất $1/n$. Gọi mẫu này là mẫu bootstrap.
++ Tính một ước lượng mới của $theta$ từ $X$. Gọi ước lượng này là $X_"boot1"$.
++ Lặp lại Bước 1 và Bước 2 tổng cộng $m$ lần, lưu trữ từng
+để tạo ra $V$, một vector các ước lượng của tham số quan tâm $theta_(hat(theta)_1^(ast.basic))$
+
+=== Kiểm chứng chéo (Cross-validation)
+_Mô tả_: Một mẫu được chia ngẫu nhiên thành hai hay nhiều tập con và kết quả được xác nhận bằng cách so sánh giữa các tập con.
+
+_Mục tiêu_: 
+- Xác minh khả năng lặp lại của kết quả
+- Đánh giá khả năng tổng quát hóa của mô hình, giúp phát hiện
+overfitting
+- Bằng cách sử dụng nhiều tập kiểm tra, cross-validation cung
+cấp cái nhìn rõ hơn về độ tin cậy và hiệu suất mô hình
+
+_Phân loại_:
+- Simple cross-validation: Chia dữ liệu thành hai tập, một để xây
+dựng mô hình và một để dự đoán.
+- Double cross-validation: Tạo mô hình hồi quy trên cả hai tập con
+và sử dụng chúng để dự đoán.
+- Multicross-validation: Mở rộng kiểm định chéo kép bằng cách lặp
+lại nhiều lần với các tập con được chọn ngẫu nhiên.
+
+==== Các bước thực hiện
++ Chia dữ liệu: Tập dữ liệu được chia ngẫu nhiên thành $K$ nhóm (K-folds)có kích thước tương đương nhau.
++ Huấn luyện và kiểm tra: Chọn một fold làm tập kiểm tra, trong
+khi K-1 folds còn lại dùng để huấn luyện mô hình. Mô hình được huấn
+luyện trên dữ liệu huấn luyện và sau đó được đánh giá trên tập kiểm
+tra.
++ Đánh giá hiệu suất: Sử dụng các hàm đánh giá như MSE, F1-
+score để đo lường độ chính xác của mô hình. Kết quả sẽ được ghi lại
+cho mỗi fold.
++ Lặp lại: Thực hiện lại quá trình trên cho đến khi tất cả các fold
+đều được sử dụng làm tập kiểm tra.
++ Tính toán trung bình: Cuối cùng, tính toán trung bình của các
+giá trị đánh giá từ tất cả các fold để có được một chỉ số tổng quát về
+hiệu suất của mô hình.
+
+Trong trường hợp kích thước mẫu lớn, người nghiên cứu có thể chia
+mẫu thành các tập con, và sau đó áp dụng kiểm định chéo đơn giản
+hoặc kép.
+
+== Nhận xét
+- Phát biểu đồ án không rõ ngay từ đầu?
+- Chưa rõ về việc tái lấy mẫu: Mẫu xuất hiện mới sẽ từ đâu ra? mẫu có rồi thì sao?
+- Ví dụ tái lấy mẫu nhằm mục đích gì?
+
+
+trung bình của nhóm có dùng thuốc mới và nhóm không dùng thuốc mới
 
 = CÁC KHÁI NIỆM CƠ BẢN VỀ PHÂN TÍCH THỐNG KÊ DỮ LIỆU NHIỀU BIẾN
 

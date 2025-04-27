@@ -6,7 +6,7 @@ _1. So sánh Xác suất và Thống kê?_
     columns: 3,
     rows: auto,
     [Khái niệm], [Ngành toán nghiên cứu khả năng (độ chắc chắn) của các biến cố ngẫu nhiên.], [Ngành khoa học về thu thập, mô tả và suy diễn thông tin từ dữ liệu quan sát.],
-    [Hướng suy diễn], [Từ quần thể (mô hình, giả thuyết) đến mẫu (kết quả ngẫu nhiên).], [Từ mẫu (dữ liệu quan sát) suy rộng ra quần thể (đặc tính chung).],
+    [Hướng suy diễn], [Từ quần thể (mô hình, giả thuyết) biết trước đến mẫu (kết quả ngẫu nhiên).], [Từ mẫu (dữ liệu quan sát) suy rộng ra quần thể (đặc tính chung).],
     [Đầu vào], [Dữ liệu giả định theo mô hình; thường là ký hiệu, tham số chưa biết.], [Dữ liệu thu thập được: số liệu mẫu, bảng biểu, biểu đồ…],
     [Mục đích], [Dự đoán xác suất xảy ra biến cố; xây dựng mô hình phân phối.], [Ước lượng tham số, kiểm định giả thuyết, mô tả đặc điểm dữ liệu.]
 )
